@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Nákupní seznam My Fit Bites</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+<style>
+/* Layout: one reading column; each step pairs its screenshots (before/after or flow) beside a short explanation. */
+:root {
+  --bg: #fbf8fc;
+  --surface: #ffffff;
+  --tint: #f3ebf6;
+  --ink: #241b28;
+  --text: #3d3342;
+  --muted: #6e6274;
+  --line: #e6dbeb;
+  --accent: #823d99;
+  --accent-ink: #ffffff;
+  --shadow: 0 1px 2px rgb(36 27 40 / 6%), 0 8px 24px rgb(36 27 40 / 7%);
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: Bitter, Georgia, "Times New Roman", serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161118; --surface: #201922; --tint: #2a1f2e; --ink: #f4eef6; --text: #ddd3e1; --muted: #ab9db1;
+    --line: #3a2e3f; --accent: #c48ad8; --accent-ink: #1b1020; --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 35%);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161118; --surface: #201922; --tint: #2a1f2e; --ink: #f4eef6; --text: #ddd3e1; --muted: #ab9db1;
+  --line: #3a2e3f; --accent: #c48ad8; --accent-ink: #1b1020; --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 24px rgb(0 0 0 / 35%);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 400 17px/1.65 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+header.intro { padding-block: 48px 8px; display: grid; gap: 16px; }
+.eyebrow { font: 600 13px/1.4 var(--font-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0; }
+h1, h2 { font-family: var(--font-display); color: var(--ink); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 52px); line-height: 1.08; font-weight: 700; }
+h2 { font-size: clamp(26px, 4vw, 34px); line-height: 1.15; font-weight: 700; }
+h3 { font: 600 19px/1.35 var(--font-body); color: var(--ink); margin: 0; }
+p { margin: 0; max-width: 65ch; }
+.lead { font-size: 19px; color: var(--text); }
+.note { font-size: 15px; color: var(--muted); }
+
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 8px 0 0; padding: 0; list-style: none; }
+.facts li { display: flex; align-items: baseline; gap: 8px; font-size: 15px; color: var(--muted); }
+.facts b { font: 700 22px/1 var(--font-body); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.switch {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  margin: 32px 0 8px; padding: 10px 0; background: var(--bg); border-bottom: 1px solid var(--line);
+}
+.switch span { font: 500 14px/1.4 var(--font-ui); color: var(--muted); }
+.seg { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--tint); gap: 2px; }
+.seg button {
+  font: 600 15px/1 var(--font-body); color: var(--accent); background: transparent;
+  border: 0; border-radius: 999px; padding: 10px 18px; min-height: 40px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.seg button:focus-visible, .shot:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+section.step { display: grid; gap: 20px; padding-block: 48px 8px; border-top: 1px solid var(--line); }
+section.step:first-of-type { border-top: 0; }
+.step-head { display: grid; gap: 10px; }
+.step-no { font: 600 14px/1 var(--font-ui); color: var(--accent); letter-spacing: .04em; }
+ul.points { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; max-width: 70ch; }
+ul.points li::marker { color: var(--accent); }
+
+.pair { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); align-items: start; }
+.pair.desk { grid-template-columns: 1fr; }
+@media (min-width: 1000px) { .pair.desk.two { grid-template-columns: 1fr 1fr; } }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+figcaption { font: 600 15px/1.4 var(--font-body); color: var(--ink); display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+figcaption small { font: 400 14px/1.4 var(--font-body); color: var(--muted); }
+.tag { font: 700 12px/1 var(--font-ui); letter-spacing: .06em; text-transform: uppercase; padding: 5px 8px; border-radius: 6px; background: var(--tint); color: var(--muted); }
+.tag.po { background: var(--accent); color: var(--accent-ink); }
+
+.shot {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow);
+  overflow-y: auto; overflow-x: hidden; max-height: 620px; overscroll-behavior: contain;
+}
+.mob .shot { width: 100%; max-width: 360px; border-radius: 22px; }
+.shot img { display: block; width: 100%; height: auto; }
+.desk .shot { max-height: 560px; }
+
+[data-view="mobil"] .only-desk, [data-view="pocitac"] .only-mob { display: none; }
+
+.cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: grid; gap: 10px; align-content: start; }
+.card ol, .card ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.card code { font: 500 14px/1.4 ui-monospace, Consolas, monospace; background: var(--tint); color: var(--ink); padding: 2px 6px; border-radius: 6px; }
+
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--line); }
+@media (prefers-reduced-motion: no-preference) { .seg button { transition: background-color .15s, color .15s; } }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap" id="top" data-view="mobil">
+  <header class="intro">
+    <p class="eyebrow">Náhled z testovací kopie webu · 17. 10. 2026</p>
+    <h1>Nákupní seznam a přehlednější recepty</h1>
+    <p class="lead">U každého receptu přibude tlačítko <b>„Přidat do nákupního seznamu“</b> a na webu samostatná stránka s nákupním seznamem. Karty receptů dostanou jednotný a čitelnější vzhled. Recepty se kvůli tomu nemusí nijak přepisovat.</p>
+    <p class="note">Všechny obrázky jsou z lokální testovací kopie webu se stejnými recepty. Na živém webu zatím není nic změněné. Kopie používá bezplatnou verzi šablony Vilva, takže hlavička a patička vypadají trochu jinak než na myfitbites.blog.</p>
+    <ul class="facts" aria-label="Rozsah">
+      <li><b>168</b> ze 172 článků s recepty</li>
+      <li><b>200</b> receptů</li>
+      <li><b>2&nbsp;489</b> ingrediencí</li>
+      <li><b>0</b> úprav v receptech</li>
+    </ul>
+  </header>
+
+  <div class="switch" role="group" aria-label="Zobrazení náhledů">
+    <span>Náhledy na:</span>
+    <div class="seg">
+      <button type="button" id="view-mobil" data-set="mobil" aria-pressed="true">Mobilu</button>
+      <button type="button" id="view-pocitac" data-set="pocitac" aria-pressed="false">Počítači</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="step" aria-labelledby="h-karta">
+      <div class="step-head">
+        <p class="step-no">1 · Recept</p>
+        <h2 id="h-karta">Přehlednější karta receptu</h2>
+        <ul class="points">
+          <li>Nadpisy „Ingredience“ a „Postup“ jsou u všech receptů stejně velké.</li>
+          <li>Skupiny jako „Na těsto“ jsou výraznější, množství jsou tučně a kroky postupu mají fialová čísla.</li>
+          <li>Na počítači se dlouhé seznamy surovin rozdělí do dvou sloupců.</li>
+          <li>Tlačítko „Stáhnout“ (tisk) funguje dál a nová tlačítka se do tisku nedostanou.</li>
+          <li>Nový vzhled karet se zapíná zvlášť, až po schválení. Nákupní seznam funguje i bez něj.</li>
+        </ul>
+      </div>
+      <div class="pair mob only-mob">
+        <figure>
+          <figcaption><span class="tag">Dnes</span> Kakaový perník s jablky</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept dnes, mobil (posouvatelný náhled)"><img src="img/1-recept-pred-mobil.png" alt="Dnešní karta receptu Kakaový perník s jablky na mobilu: nadpis Ingredience, skupiny Na těsto a Na zdobení jako drobný text, seznam surovin a číslovaný postup." loading="lazy" width="750" height="3076"></div>
+        </figure>
+        <figure>
+          <figcaption><span class="tag po">Nově</span> Kakaový perník s jablky</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept nově, mobil (posouvatelný náhled)"><img src="img/2-recept-po-mobil.png" alt="Nová karta receptu na mobilu: fialové tlačítko Přidat do nákupního seznamu pod tlačítkem Stáhnout, tučná množství, fialové nadpisy skupin a fialová čísla kroků." loading="lazy" width="750" height="4206"></div>
+        </figure>
+      </div>
+      <div class="pair desk only-desk">
+        <figure>
+          <figcaption><span class="tag">Dnes</span> Kakaový perník s jablky</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept dnes, počítač (posouvatelný náhled)"><img src="img/1-recept-pred-pocitac.png" alt="Dnešní karta receptu na počítači: suroviny v jednom dlouhém sloupci." loading="lazy" width="1280" height="1076"></div>
+        </figure>
+        <figure>
+          <figcaption><span class="tag po">Nově</span> Kakaový perník s jablky</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept nově, počítač (posouvatelný náhled)"><img src="img/2-recept-po-pocitac.png" alt="Nová karta receptu na počítači: suroviny ve dvou sloupcích, tlačítka Přidat do nákupního seznamu a Nezhasínat displej." loading="lazy" width="1280" height="1370"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="h-pridani">
+      <div class="step-head">
+        <p class="step-no">2 · Přidání</p>
+        <h2 id="h-pridani">Přidání receptu do seznamu</h2>
+        <ul class="points">
+          <li>Po kliknutí se zespodu vysune okno. Nejdřív se nastaví, kolik toho nakupovat: počet porcí, nebo u receptů na kusy poloviční až trojnásobné množství. Množství se samy přepočítají.</li>
+          <li>Zaškrtnuté je všechno kromě věcí, které se doma obvykle mají (sůl, pepř, voda, olej) a volitelných surovin. Každou položku jde jedním klepnutím přepnout.</li>
+          <li>U článků s více recepty (meal prep) se nejdřív vybere, které recepty se budou vařit.</li>
+          <li>Po přidání se ukáže potvrzení s odkazem na seznam a tlačítkem „Vrátit“. U receptu je pak vidět, že už v seznamu je.</li>
+        </ul>
+      </div>
+      <div class="pair mob only-mob">
+        <figure>
+          <figcaption>Okno přidání <small>recept na 10–12 kusů</small></figcaption>
+          <div class="shot" tabindex="0" aria-label="Okno přidání, mobil"><img src="img/3-okno-pridani-mobil.png" alt="Okno Přidat do nákupního seznamu: volba ½×, 1×, 2×, 3×, seznam surovin se zaškrtávacími poli a tlačítko Přidat 12 položek." loading="lazy" width="750" height="1624"></div>
+        </figure>
+        <figure>
+          <figcaption>Po přidání</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept po přidání, mobil"><img src="img/4-po-pridani-mobil.png" alt="Lišta u receptu po přidání: tlačítko Upravit v nákupním seznamu, odkaz Nákupní seznam (12), text Přidáno 12 položek a odkazy Zobrazit seznam a Vrátit." loading="lazy" width="750" height="1400"></div>
+        </figure>
+      </div>
+      <div class="pair desk two only-desk">
+        <figure>
+          <figcaption>Okno přidání</figcaption>
+          <div class="shot" tabindex="0" aria-label="Okno přidání, počítač"><img src="img/3-okno-pridani-pocitac.png" alt="Okno přidání na počítači uprostřed obrazovky se seznamem surovin." loading="lazy" width="1280" height="900"></div>
+        </figure>
+        <figure>
+          <figcaption>Po přidání</figcaption>
+          <div class="shot" tabindex="0" aria-label="Recept po přidání, počítač"><img src="img/4-po-pridani-pocitac.png" alt="Lišta u receptu po přidání na počítači." loading="lazy" width="1280" height="500"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="h-seznam">
+      <div class="step-head">
+        <p class="step-no">3 · Nákup</p>
+        <h2 id="h-seznam">Stránka Nákupní seznam</h2>
+        <ul class="points">
+          <li>Seznam je seřazený podle oddělení v obchodě (ovoce a zelenina, mléčné výrobky, pečení…), nebo podle receptů.</li>
+          <li>Stejné suroviny z více receptů se sečtou. V ukázce jsou to jablka a vejce z perníku i z lívanců, každé jen na jednom řádku.</li>
+          <li>V obchodě se položky odklepávají a koupené se přesunou dolů do „Koupeno“. Omylem se nic nesmaže.</li>
+          <li>Seznam jde zkopírovat, vytisknout a na telefonu poslat přes WhatsApp, Messenger nebo SMS. Dají se do něj dopsat vlastní položky, třeba banány na snídani.</li>
+          <li>Pro nákup je tu větší písmo a tlačítko „Nezhasínat displej“.</li>
+        </ul>
+      </div>
+      <div class="pair mob only-mob">
+        <figure>
+          <figcaption>Podle oddělení <small>perník + lívance na 4 porce</small></figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam podle oddělení, mobil (posouvatelný náhled)"><img src="img/5-seznam-podle-oddeleni-mobil.png" alt="Nákupní seznam podle oddělení: Zbývá koupit 21 z 21, tlačítka Nezhasínat displej, Větší písmo, Kopírovat, Vytisknout, pole pro vlastní položku a suroviny po odděleních." loading="lazy" width="750" height="5716"></div>
+        </figure>
+        <figure>
+          <figcaption>Podle receptu</figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam podle receptu, mobil (posouvatelný náhled)"><img src="img/6-seznam-podle-receptu-mobil.png" alt="Nákupní seznam rozdělený podle receptů s počtem porcí u každého receptu." loading="lazy" width="750" height="6438"></div>
+        </figure>
+        <figure>
+          <figcaption>Během nákupu <small>3 položky odklepnuté</small></figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam během nákupu, mobil (posouvatelný náhled)"><img src="img/7-seznam-odskrtane-mobil.png" alt="Nákupní seznam se zbývajícími 18 položkami a sbalenou sekcí Koupeno (3) dole." loading="lazy" width="750" height="5444"></div>
+        </figure>
+      </div>
+      <div class="pair desk only-desk">
+        <figure>
+          <figcaption>Podle oddělení</figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam podle oddělení, počítač (posouvatelný náhled)"><img src="img/5-seznam-podle-oddeleni-pocitac.png" alt="Nákupní seznam na počítači: suroviny po odděleních vlevo, vpravo počet zbývajících položek, tlačítka a recepty v seznamu." loading="lazy" width="1280" height="2341"></div>
+        </figure>
+        <figure>
+          <figcaption>Podle receptu</figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam podle receptu, počítač (posouvatelný náhled)"><img src="img/6-seznam-podle-receptu-pocitac.png" alt="Nákupní seznam na počítači rozdělený podle receptů." loading="lazy" width="1280" height="2815"></div>
+        </figure>
+        <figure>
+          <figcaption>Během nákupu</figcaption>
+          <div class="shot" tabindex="0" aria-label="Seznam během nákupu, počítač (posouvatelný náhled)"><img src="img/7-seznam-odskrtane-pocitac.png" alt="Nákupní seznam na počítači se sekcí Koupeno (3) a tlačítkem Smazat koupené." loading="lazy" width="1280" height="2152"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="h-dal">
+      <div class="step-head">
+        <p class="step-no">4 · Spuštění</p>
+        <h2 id="h-dal">Co dál</h2>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>Soukromí</h3>
+          <p>Nikdo se nemusí registrovat a nic se nesleduje ani neposílá jinam. Seznam zůstává jen v telefonu nebo počítači čtenářky. Když web otevře přímo z Instagramu, stránka jí připomene, ať si seznam pošle přes „Sdílet“, protože v běžném prohlížeči by ho pak nenašla.</p>
+        </div>
+        <div class="card">
+          <h3>Instalace (asi 20 minut)</h3>
+          <ol>
+            <li>Nahrát plugin: Pluginy → Instalovat → Nahrát plugin, potom Aktivovat.</li>
+            <li>Vytvořit stránku „Nákupní seznam“ s krátkým kódem <code>[mfb_nakupni_seznam]</code>.</li>
+            <li>Přidat ji do menu a vymazat mezipaměť webu.</li>
+            <li>Na telefonu vyzkoušet pár receptů.</li>
+          </ol>
+          <p class="note">Vše jde kdykoliv vypnout v Nastavení → Nákupní seznam, celé nebo po částech.</p>
+        </div>
+        <div class="card">
+          <h3>K rozhodnutí</h3>
+          <ul>
+            <li>Zapnout nový vzhled karet receptů?</li>
+            <li>Zmenšit řádek Hotové za / Porce / Náročnost do jednoho kompaktního řádku? „Náročnost jednoduchá“ je u všech 172 receptů stejná.</li>
+            <li>Přejmenovat „Stáhnout“ na „Vytisknout / PDF“? Tlačítko ve skutečnosti otevírá tisk.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Později</h3>
+          <p>Jídelníček na týden přijde ve druhé fázi. Seznam je postavený tak, aby se na něj dal napojit bez předělávání.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p class="note">Testovací verze pluginu 0.9.0. Náhledy pořízené na šířce 375 px (mobil) a 1280 px (počítač).</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('top');
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.seg button'));
+  function setView(v) {
+    root.setAttribute('data-view', v);
+    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set') === v)); });
+    try { localStorage.setItem('mfb-nahled-view', v); } catch (e) {}
+  }
+  buttons.forEach(function (b) { b.addEventListener('click', function () { setView(b.getAttribute('data-set')); }); });
+  var saved = null;
+  try { saved = localStorage.getItem('mfb-nahled-view'); } catch (e) {}
+  if (saved === 'mobil' || saved === 'pocitac') setView(saved);
+})();
+</script>
+</body>
+</html>
