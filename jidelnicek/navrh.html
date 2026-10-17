@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Jídelníček na týden – návrh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap">
+<style>
+:root { --bg:#fbf8fc; --surface:#fff; --ink:#241b28; --text:#3d3342; --muted:#6e6274; --line:#e6dbeb; --accent:#823d99; --tint:#f3ebf6;
+  --display:"Playfair Display", Georgia, serif; --body:Bitter, Georgia, serif; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161118; --surface:#201922; --ink:#f4eef6; --text:#ddd3e1; --muted:#ab9db1; --line:#3a2e3f; --accent:#c48ad8; --tint:#2a1f2e; color-scheme:dark; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:400 17px/1.7 var(--body);
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:32px 64px; }
+main { max-width:720px; margin:0 auto; }
+nav { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:24px; font-size:15px; }
+a { color:var(--accent); text-underline-offset:3px; }
+a:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+h1, h2 { font-family:var(--display); color:var(--ink); line-height:1.15; text-wrap:balance; }
+h1 { font-size:clamp(30px, 6vw, 44px); margin:0 0 8px; }
+h2 { font-size:clamp(22px, 4vw, 28px); margin:36px 0 8px; padding-top:20px; border-top:1px solid var(--line); }
+p, li { max-width:68ch; }
+ul, ol { padding-left:1.2em; display:grid; gap:6px; }
+li::marker { color:var(--accent); }
+code { font:500 15px/1.4 ui-monospace, Consolas, monospace; background:var(--tint); color:var(--ink); padding:2px 6px; border-radius:6px; }
+strong { color:var(--ink); }
+</style>
+</head>
+<body>
+<main>
+<nav aria-label="Odkazy"><a href="./">Vyzkoušet ukázku jídelníčku</a><a href="../">Náhled nákupního seznamu</a></nav>
+<h1>Jídelníček na týden – návrh pro Týnku</h1>
+<p><em>Ondřej, 17. 10. 2026</em></p>
+<p>Ahoj Týnko,</p>
+<p>díky za schválení náhledu. E-book nechávám stranou a posílám, jak si představuju jídelníček, aby byl web přehledný a čtenářkám opravdu pomohl naplánovat týden. Všechno mám spočítané na tvých 172 receptech. Jídelníček navazuje na nákupní seznam, takže se dají spustit spolu i zvlášť.</p>
+<h2>Co čtenářky uvidí</h2>
+<ul><li>V menu novou stránku <strong>„Jídelníček“</strong> hned vedle „Nákupního seznamu“. Na mobilu jsou dny pod sebou od pondělí do neděle a u každého Snídaně, Svačina, Oběd a Večeře. Dnešek je zvýrazněný, uplynulé dny se schovají.</li><li>U každého receptu tlačítko <strong>„Do jídelníčku“</strong> vedle „Nezhasínat displej“. Čtenářka v tabulce týdne odklikne, kdy to bude jíst, a nastaví, pro kolik lidí vaří.</li><li>Přímo v jídelníčku klepne na „+ Večeře“ a vybere z tvých receptů: podle druhu jídla, s filtry <strong>Do 30 minut</strong>, <strong>Na více dní</strong> a <strong>Bez masa</strong> a s hledáním („dyne“ najde i „dýně“).</li></ul>
+<h2>Uvař jednou, jez víckrát</h2>
+<p>Na zbytky ani meal prep není potřeba nic zvláštního, stačí dát stejný recept do víc políček. Jídelníček pak sám napíše u pondělní večeře „Uvařte 4 porce – i na úterní oběd“ a u úterního oběda „Zbytky z pondělní večeře“. Nahoře ukáže „V neděli si připravte předem“ (třeba vločky na snídaně, polévku a perník na svačiny) i s odhadem času. U meal prep článků si čtenářka nejdřív vybere, které recepty připraví, a každý zařadí zvlášť.</p>
+<h2>Nákupní seznam z celého týdne</h2>
+<p>Jedno tlačítko <strong>„Přidat týden do nákupního seznamu“</strong> dá suroviny ze všech receptů do seznamu, který už máš hotový: sečtené, podle oddělení v obchodě, se stejnými pravidly jako dnes. Množství se přepočítá podle lidí a jídel: dva obědy pro dva lidi jsou 4 porce, ne víc. Když čtenářka v týdnu něco změní, tlačítko nabídne <strong>„Doplnit nákupní seznam“</strong> a doplní nebo ubere jen rozdíl. Recept, který už v seznamu měla, se nepočítá dvakrát a ze seznamu nikdy nic nezmizí bez jejího klepnutí.</p>
+<h2>Ukázkové týdny od tebe</h2>
+<p>Nejrychlejší start je <strong>„Ukázkový týden od Týnky“</strong>: od odkazu k hotovému týdnu i nákupnímu seznamu jsou to 4 klepnutí. Připravím ti ke schválení dva týdny z tvých receptů: „Podzimní týden z jednoho nákupu“ (14 receptů, 6 ze 7 obědů ze zbytků nebo z nedělní přípravy) a „Krabičky do práce na celý týden“. Další uděláš kdykoli sama a bez kódu: naplánuješ týden u sebe v telefonu, dáš „Sdílet“, text vložíš do Nastavení → Nákupní seznam → Ukázkové týdny a dostaneš odkaz do článku nebo do bia na Instagramu („Celý týden z jednoho nákupu“). Stačí jednou za sezónu, nic se nemusí vydávat každý týden.</p>
+<h2>Bez registrace</h2>
+<p>Stejně jako u seznamu: žádné účty, nic se nesleduje, jídelníček je jen v telefonu čtenářky. Partnerovi nebo do jiného telefonu ho pošle přes „Sdílet“ a může si ho vytisknout na lednici. Když web otevře z Instagramu, stránka ji upozorní, ať si ho pošle nebo otevře v prohlížeči.</p>
+<h2>Co uděláš ty (asi 20 minut)</h2>
+<ol><li>Nahraješ novou verzi pluginu.</li><li>Otevřeš v anonymním okně odkaz, který ti pošlu. Je to kontrola, že si jídelníček umí načíst recepty z webu. Na web nesahám.</li><li>Vytvoříš stránku „Jídelníček“ s krátkým kódem <code>[mfb_jidelnicek]</code> a přidáš ji do menu.</li><li>V Nastavení → Nákupní seznam zapneš „Jídelníček pro čtenářky“, vložíš dva ukázkové týdny a pošleš mi čísla z kontrolního řádku.</li><li>Vymažeš mezipaměť a naplánuješ si na telefonu jeden týden.</li></ol>
+<p>Žádný recept upravovat nemusíš: čas, porce i druh jídla se berou z toho, co v receptech už je. Volitelně (15 minut): přidat kategorii „Hlavní jídla“ asi patnácti polévkám a bowlům, které ji nemají, aby se lépe nabízely.</p>
+<h2>Co jídelníček dělat nebude</h2>
+<ul><li>Nesčítá kalorie ani makra. Nutriční údaje jsou v receptech v různém tvaru (na porci, na kus…) a součty by klamaly.</li><li>Nesestaví týden sám, nemá přihlašování, synchronizaci ani připomínky.</li><li>Neradí, jak dlouho jídlo vydrží.</li><li>Na anglické verzi webu tlačítko u receptů nebude.</li></ul>
+<h2>O čem rozhodneš</h2>
+<ol><li>Obrázky receptů v jídelníčku (stejné, jaké web už ukazuje). Navrhuju ano.</li><li>Výchozí počet lidí: 2.</li><li>O víkendu se jídelníček otevře rovnou na příští týden. Navrhuju ano.</li><li>Recept v seznamu i v jídelníčku se započítá jen jednou. Navrhuju ano.</li><li>Na iPhonech a iPadech se systémem staršším než z jara 2022 nebudou u receptu nová tlačítka a recept zůstane jako dnes. Jinak se „Do jídelníčku“ do limitu rychlosti stránky nevejde.</li><li>Týdny starší než 14 dní se z jídelníčku smažou (nákupní seznam zůstane).</li><li>Jestli chceš před stavbou ukázat klikací náhled 3–5 čtenářkám z Instagramu. Doporučuju, stačí půl hodiny na každou.</li></ol>
+<p>Celý jídelníček jde jedním kliknutím vypnout v Nastavení → Nákupní seznam a nákupní seznam pak funguje dál jako dnes.</p>
+<p>Ondřej</p>
+</main>
+</body>
+</html>

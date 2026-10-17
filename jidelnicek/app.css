@@ -1,0 +1,297 @@
+/* app.css — Jídelníček prototype: planner page (S3), S2/S4/S5 dialogs, simulated recipe page (S1) and page chrome.
+ * Loaded after mfb.css (the plugin's own stylesheet: tokens §10.1, .mfb-btn, the sheet shell, chips, list page).
+ * Mobile first (375 px), no horizontal scroll at 320 px, the week table from 1024 px. Nothing fixed or sticky. */
+
+/* ------------------------------------------------------------------ page chrome (stands in for the Vilva Pro theme) */
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--mfb-bg);color:var(--mfb-text);font-family:var(--mfb-font);font-size:16px;line-height:1.5}
+*,*::before,*::after{box-sizing:border-box}
+.site-head{padding:18px 16px 14px;border-bottom:1px solid var(--mfb-line);text-align:center}
+.site-logo{color:var(--mfb-ink);font-family:var(--mfb-font-display);font-size:28px;font-weight:700;line-height:1.2;text-decoration:none}
+.site-tag{color:var(--mfb-muted);font-size:14px}
+.proto{max-width:1100px;margin:12px auto 0;padding:0 16px}
+.proto__box{padding:8px 12px;border:1px dashed #9a7300;border-radius:var(--mfb-radius-card);background:#fffbea;color:#3d2e00;font-size:13px;line-height:1.4}
+.proto__t{color:#2b2000;font-size:15px;font-weight:700}
+.proto__link{color:#2b2000;font-weight:700;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+.proto__link:focus-visible{outline:3px solid #823d99;outline-offset:2px}
+.proto__tools{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px}
+.mfb-ui.proto .mfb-btn.proto-btn{min-height:44px;padding:4px 12px;background:#fff;font-size:14px}
+.proto-date{color:#3d2e00;font-size:13px}
+.site-main{max-width:760px;margin:0 auto;padding:8px 16px 48px}
+.site-main.is-wide{max-width:1100px}
+.site-foot{padding:24px 16px;background:#121212;color:#fff;font-size:13px;text-align:center}
+.mfb-h1{margin:12px 0 14px;color:var(--mfb-ink);font-family:var(--mfb-font-display);font-size:34px;font-weight:700;line-height:1.15;overflow-wrap:anywhere}
+.mfb-ui a{color:var(--mfb-accent-hover)}
+.mfb-legend{display:block;margin:0 0 8px;color:var(--mfb-ink);font-size:16px;font-weight:600;line-height:1.3}
+.mfb-notices>*{margin:0 0 8px}
+.mfb-ui .mfb-note--warn{padding:12px 16px;border:1px solid var(--mfb-tint-line);border-left:4px solid var(--mfb-accent);border-radius:var(--mfb-radius);background:var(--mfb-tint);color:var(--mfb-ink);font-size:15px}
+.mfb-pill{display:inline-block;padding:0 8px;border-radius:999px;background:var(--mfb-accent);color:#fff;font-size:13px;font-weight:600;line-height:22px;vertical-align:2px;white-space:nowrap}
+.mfb-pill--soft{border:1px solid var(--mfb-tint-line);background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:12px;line-height:18px}
+.mfb-pill--s{padding:0 5px;font-size:11px;line-height:17px}
+
+/* separators in tinted boxes: --mfb-muted is 4.3:1 on --mfb-tint, #5c5c5c is 5.8:1 */
+.mfb-plan .mfb-sep,.mfb-sheet .mfb-sep,.mfb-lp .mfb-sep{color:#5c5c5c}
+
+/* PHP nav "Jídelníček · Nákupní seznam" (S3.1.1) */
+.mfb-nav{display:flex;gap:8px;margin:0 0 16px}
+.mfb-ui .mfb-nav .mfb-btn{flex:1 1 0;min-width:0;padding-left:8px;padding-right:8px}
+.mfb-ui .mfb-nav a.mfb-btn[aria-current="page"]{border-color:var(--mfb-accent);background:var(--mfb-tint);box-shadow:inset 0 0 0 1px var(--mfb-accent);color:var(--mfb-ink)}
+
+/* ------------------------------------------------------------------ segmented week switch */
+.mfb-seg{margin:0 0 16px}
+.mfb-seg__track{display:flex;padding:3px;border-radius:999px;background:var(--mfb-tint)}
+.mfb-seg__opt{position:relative;display:flex;flex:1 1 0;min-width:0;cursor:pointer}
+.mfb-ui input.mfb-seg__in{position:absolute;width:1px;height:1px;margin:0;padding:0;border:0;opacity:0;overflow:hidden;clip-path:inset(50%)}
+.mfb-seg__txt{display:flex;flex:1 1 auto;flex-direction:column;align-items:center;justify-content:center;min-height:44px;padding:4px 8px;border:1px solid transparent;border-radius:999px;color:var(--mfb-accent-hover);font-size:15px;font-weight:600;line-height:1.2;text-align:center}
+.mfb-seg__d{color:var(--mfb-text);font-size:13px;font-weight:400}
+.mfb-seg__in:checked+.mfb-seg__txt{border-color:var(--mfb-accent);background:var(--mfb-bg);box-shadow:inset 0 0 0 1px var(--mfb-accent),0 1px 3px rgba(18,18,18,.12);color:var(--mfb-ink);font-weight:700}
+.mfb-seg__in:focus-visible+.mfb-seg__txt{outline:var(--mfb-focus);outline-offset:2px}
+.mfb-seg--small{margin:4px 0 12px}
+
+/* ------------------------------------------------------------------ S3.3 summary card */
+.mfb-sum{margin:0 0 16px;padding:12px;border-radius:var(--mfb-radius-card);background:var(--mfb-tint)}
+.mfb-sum__h{margin:0 0 10px;color:var(--mfb-ink);font-size:18px;font-weight:600;line-height:1.3}
+.mfb-ui .mfb-btn.mfb-sum__primary{width:100%}
+.mfb-sum__cap{margin-top:8px;color:var(--mfb-text);font-size:14px;line-height:1.45}
+.mfb-sum__line{margin:0 0 8px;color:var(--mfb-ink);font-size:15px;line-height:1.45}
+.mfb-sum__ok{display:flex;flex-wrap:wrap;align-items:center;gap:0 6px}
+.mfb-sum__ok>.mfb-sum__ico+span{flex:1 1 calc(100% - 26px);min-width:0} /* the check stays next to its text at 320 px; the link goes below */
+.mfb-sum__ico{display:inline-flex;color:var(--mfb-accent)}
+.mfb-sum__people{margin-top:8px;font-size:15px}
+.mfb-sum__ppl{margin-top:8px}
+.mfb-sum__pplacts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.mfb-sum__src{margin-top:4px;color:#5c5c5c;font-size:14px}
+.mfb-sum__msg{font-size:15px;line-height:1.5}
+.mfb-sum__msg:not(:empty){margin-top:10px;padding-top:10px;border-top:1px solid var(--mfb-tint-line)}
+.mfb-sum__msg.is-alert:not(:empty),.mfb-day__msg.is-alert:not(:empty),.mfb-week__msg.is-alert:not(:empty){padding:8px 10px;border:0;border-left:4px solid var(--mfb-accent);background:var(--mfb-bg);color:var(--mfb-ink);font-weight:600}
+.mfb-sum__msg:focus{outline:none}
+.mfb-sum__msg:focus-visible{outline:var(--mfb-focus);outline-offset:2px}
+
+/* steppers outside the sheet (summary card "Změnit") */
+.mfb-plan .mfb-step{display:flex;align-items:center;gap:16px}
+.mfb-ui .mfb-btn.mfb-step__btn{width:44px;height:44px;padding:0;border:2px solid var(--mfb-accent);border-radius:50%;background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:24px;font-weight:700;line-height:1}
+.mfb-ui .mfb-btn.mfb-step__btn:disabled{border-color:var(--mfb-tint-line);color:var(--mfb-muted)}
+.mfb-plan .mfb-step__out{display:inline-block;min-width:6em;color:var(--mfb-ink);font-size:18px;font-weight:700;text-align:center}
+
+/* ------------------------------------------------------------------ S3.4 empty week */
+.mfb-empty-pl{margin:0 0 16px;padding:16px;border-radius:var(--mfb-radius-card);background:var(--mfb-tint)}
+.mfb-empty-pl__h{color:var(--mfb-ink);font-size:20px;font-weight:700;line-height:1.3}
+.mfb-empty-pl__t{margin:6px 0 0;font-size:16px;line-height:1.5}
+.mfb-empty-pl__sh{margin:16px 0 8px;color:var(--mfb-ink);font-size:16px;font-weight:700}
+.mfb-empty-pl__hint{margin-top:12px;color:var(--mfb-text);font-size:14px}
+.mfb-samples{display:grid;gap:12px;margin:0 0 12px;padding:0;list-style:none}
+/* .mfb-ui li{padding:0} (mfb.css, 0,1,1) would otherwise strip the card and row padding */
+.mfb-ui .mfb-sample{padding:12px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-sample__t{color:var(--mfb-ink);font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.mfb-sample__d{margin:4px 0;font-size:15px;line-height:1.45}
+.mfb-sample__n{margin:0 0 8px;color:var(--mfb-muted);font-size:14px}
+.mfb-ui .mfb-btn.mfb-sample__b{width:100%}
+
+/* ------------------------------------------------------------------ prep card, past days, day cards (S3.1) */
+.mfb-prep{margin:0 0 12px;padding:12px;border:1px solid var(--mfb-tint-line);border-left:4px solid var(--mfb-accent);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-prep__h{color:var(--mfb-ink);font-size:16px;font-weight:700;line-height:1.35}
+.mfb-prep__t{color:var(--mfb-text);font-weight:400}
+.mfb-prep__list,.mfb-day__prep ul,.mfb-week__cook ul{margin:6px 0 0;padding:0;list-style:none}
+.mfb-prep__list li,.mfb-day__prep li,.mfb-week__cook li{position:relative;padding:3px 0 3px 14px;font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.mfb-prep__list li::before,.mfb-day__prep li::before,.mfb-week__cook li::before{content:"";position:absolute;top:.75em;left:2px;width:6px;height:6px;border-radius:50%;background:var(--mfb-accent)}
+.mfb-past{margin:0 0 12px;padding:0 12px;border:1px solid var(--mfb-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-past[open]{padding-bottom:12px}
+.mfb-past__sum{display:list-item;min-height:44px;padding:10px 0;color:var(--mfb-ink);font-weight:600;cursor:pointer}
+.mfb-past>.mfb-day+.mfb-day,.mfb-past>.mfb-prep+.mfb-day{margin-top:12px}
+.mfb-days{display:grid;gap:12px}
+.mfb-day{min-width:0;padding:12px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-day.is-today{background:var(--mfb-tint)}
+.mfb-day__h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;color:var(--mfb-ink);font-size:18px;font-weight:700;line-height:1.3}
+.mfb-day__h:focus{outline:none}
+.mfb-day__h:focus-visible{outline:var(--mfb-focus);outline-offset:2px}
+.mfb-day.is-past .mfb-day__h{color:var(--mfb-text)}
+.mfb-day__cook{margin-top:4px;font-size:14px;line-height:1.45}
+.mfb-day__prep{margin-top:6px;font-size:14px}
+.mfb-day__prepl{font-weight:600}
+.mfb-slot__l{margin:12px 0 0;color:var(--mfb-accent);font-size:13px;font-weight:700;letter-spacing:1px;line-height:1.4;text-transform:uppercase}
+.mfb-meals{margin:0;padding:0;list-style:none}
+.mfb-ui .mfb-meal{display:flex;align-items:center;gap:12px;min-height:72px;padding:8px 0}
+.mfb-meal+.mfb-meal{border-top:1px solid var(--mfb-line-soft)}
+.mfb-thumb{display:block;flex:none;width:56px;height:56px;border-radius:var(--mfb-radius);background:var(--mfb-tint);object-fit:cover}
+.mfb-thumb--s{width:40px;height:40px}
+.mfb-meal__b{flex:1 1 auto;min-width:0}
+.mfb-ui a.mfb-meal__t{display:-webkit-box;overflow:hidden;color:var(--mfb-ink);font-size:16px;font-weight:600;line-height:1.3;text-decoration:none;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+.mfb-ui a.mfb-meal__t:hover{color:var(--mfb-accent-hover);text-decoration:underline}
+.mfb-meal__m{margin-top:2px;color:var(--mfb-muted);font-size:14px;line-height:1.4;overflow-wrap:anywhere}
+.mfb-day.is-today .mfb-meal__m{color:#5c5c5c}
+.mfb-ui .mfb-btn.mfb-meal__edit{flex:none;width:44px;height:44px;padding:0;border:1px solid var(--mfb-tint-line);border-radius:50%;background:var(--mfb-bg);color:var(--mfb-accent-hover)}
+.mfb-ui .mfb-btn.mfb-meal__edit:not(:disabled):hover{border-color:var(--mfb-accent);background:var(--mfb-tint)}
+.mfb-addrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px}
+@media (min-width:360px){.mfb-addrow{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.mfb-ui .mfb-btn.mfb-chip-add{min-width:0;min-height:44px;padding:4px 2px;border:1.5px dashed var(--mfb-accent);border-radius:999px;background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.mfb-ui .mfb-btn.mfb-chip-add:not(:disabled):hover{background:var(--mfb-tint)}
+.mfb-ui .mfb-btn.mfb-chip-add--more{grid-column:span 2}
+.mfb-day__msg,.mfb-week__msg,.mfb-plan__actmsg{font-size:15px;line-height:1.5}
+.mfb-day__msg:not(:empty){margin-top:10px;padding:8px 10px;border-radius:var(--mfb-radius);background:var(--mfb-tint)}
+.mfb-day.is-today .mfb-day__msg:not(:empty){background:var(--mfb-bg)}
+.mfb-week__msg:not(:empty){margin:0 0 10px;padding:8px 10px;border-radius:var(--mfb-radius);background:var(--mfb-tint)}
+.mfb-plan__actmsg:not(:empty){padding:8px 10px;border-radius:var(--mfb-radius);background:var(--mfb-tint)}
+
+/* bottom actions + inline confirm */
+.mfb-plan__bottom{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-top:20px}
+.mfb-plan__acts{display:flex;flex-wrap:wrap;gap:8px}
+.mfb-ui .mfb-plan__acts>.mfb-btn{flex:1 1 0;min-width:0}
+.mfb-ui .mfb-btn.mfb-plan__clear{align-self:flex-start}
+.mfb-plan .mfb-confirm{padding:12px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-tint)}
+.mfb-plan .mfb-confirm__q{margin:0 0 4px;color:var(--mfb-ink);font-weight:600}
+.mfb-plan .mfb-confirm__b{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.mfb-check{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer;font-size:15px;line-height:1.4}
+.mfb-plan__foot{margin-top:24px}
+.mfb-plan__foot>.mfb-note+.mfb-note{margin-top:6px}
+
+/* ------------------------------------------------------------------ S3.2 ≥ 1024 px: week table */
+.mfb-plan__top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px}
+.mfb-plan__top .mfb-seg{width:380px;margin:0}
+.mfb-plan__top .mfb-plan__acts{flex:0 0 auto}
+.mfb-ui .mfb-plan__top .mfb-plan__acts>.mfb-btn{flex:0 0 auto}
+.mfb-plan.is-desk .mfb-sum{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:4px 24px}
+.mfb-plan.is-desk .mfb-sum>*{grid-column:1}
+.mfb-plan.is-desk .mfb-sum>.mfb-sum__state{grid-column:2;grid-row:1/span 3;max-width:420px}
+.mfb-plan.is-desk .mfb-sum__msg{grid-column:1/-1}
+.mfb-plan.is-desk .mfb-samples{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mfb-plan.is-desk .mfb-empty-pl{display:block}
+.mfb-plan.is-desk .mfb-plan__bottom{flex-direction:row;flex-wrap:wrap;align-items:flex-start}
+.mfb-plan.is-desk .mfb-plan__actmsg{flex:1 1 100%}
+.mfb-plan.is-desk .mfb-confirm{flex:1 1 100%}
+.mfb-week-wrap{margin:0 0 16px}
+table.mfb-week{width:100%;border:1px solid var(--mfb-tint-line);border-collapse:separate;border-spacing:0;border-radius:var(--mfb-radius-card);table-layout:fixed;overflow:hidden}
+.mfb-week col.mfb-week__c0{width:150px}
+.mfb-week thead th{padding:10px 8px;background:var(--mfb-tint);color:var(--mfb-accent);font-size:13px;font-weight:700;letter-spacing:1px;text-align:left;text-transform:uppercase}
+.mfb-week tbody th,.mfb-week tbody td{padding:8px;border-top:1px solid var(--mfb-tint-line);font-weight:400;text-align:left;vertical-align:top}
+.mfb-week tbody td{border-left:1px solid var(--mfb-line-soft)}
+.mfb-week tbody tr.is-today>*{background:var(--mfb-tint)}
+.mfb-week tbody tr.is-past>*{background:#fafafa}
+.mfb-week tbody tr.is-past .mfb-week__dh{color:var(--mfb-text)}
+.mfb-week__dh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;color:var(--mfb-ink);font-size:16px;font-weight:700}
+.mfb-week__dh:focus{outline:none}
+.mfb-week__dh:focus-visible{outline:var(--mfb-focus);outline-offset:2px}
+.mfb-week__cook{margin-top:4px;font-size:13px;line-height:1.4}
+.mfb-week__cook li{font-size:13px}
+.mfb-week__prep td{font-size:15px}
+.mfb-week__prep th{color:var(--mfb-ink);font-weight:700}
+.mfb-ui .mfb-meal.mfb-meal--c{display:grid;grid-template-columns:40px minmax(0,1fr) 44px;align-items:start;gap:8px;min-height:0;padding:4px 0 8px}
+.mfb-meal--c .mfb-thumb{margin-top:2px}
+.mfb-ui .mfb-meal--c a.mfb-meal__t{font-size:15px}
+.mfb-meal--c .mfb-meal__m{font-size:13px}
+.mfb-ui .mfb-btn.mfb-cell-add{width:100%;min-height:44px;padding:0;border:1.5px dashed var(--mfb-tint-line);border-radius:var(--mfb-radius);background:transparent;color:var(--mfb-accent-hover)}
+.mfb-ui .mfb-btn.mfb-cell-add:not(:disabled):hover{border-color:var(--mfb-accent);background:var(--mfb-bg)}
+.mfb-meals+.mfb-cell-add{margin-top:4px}
+
+/* ------------------------------------------------------------------ dialogs: S2 plan sheet, S4 picker, S5 apply */
+.mfb-sheet .mfb-sheet__note{color:var(--mfb-text)}
+/* the title takes focus when a dialog opens (tabindex=-1, not a control): no ring */
+.mfb-ui .mfb-sheet__title:focus{outline:none}
+.mfb-plgrid{width:100%;margin:4px 0 12px;border-collapse:collapse;table-layout:fixed}
+.mfb-plgrid col.mfb-plgrid__c0{width:56px}
+.mfb-plgrid thead th{padding:6px 0;color:var(--mfb-ink);font-size:12px;font-weight:700;line-height:1.2;text-align:center;text-transform:uppercase}
+.mfb-plgrid thead th.is-hint{border-radius:5px 5px 0 0;background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+.mfb-plgrid tbody th{padding:0 2px 0 0;color:var(--mfb-ink);font-size:14px;font-weight:600;line-height:1.2;text-align:left}
+.mfb-plgrid__d{display:block;white-space:nowrap}
+.mfb-plgrid td{height:48px;padding:0;border-top:1px solid var(--mfb-line-soft);text-align:center}
+.mfb-plgrid thead td{height:auto;border:0}
+.mfb-plgrid tr.is-today>*{background:var(--mfb-tint)}
+.mfb-plgrid tr.is-past th{color:var(--mfb-muted);font-weight:400}
+.mfb-plcell{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;cursor:pointer}
+.mfb-plcell .mfb-cb:disabled{cursor:not-allowed;opacity:.45}
+.mfb-plcell__dot{position:absolute;top:6px;right:calc(50% - 19px);width:7px;height:7px;border-radius:50%;background:var(--mfb-accent)}
+@media (max-width:359px){.mfb-plgrid thead th{font-size:10.5px}}
+.mfb-plamt{margin:0 0 12px;font-size:15px;line-height:1.45}
+.mfb-plamt__cap{color:var(--mfb-ink)}
+.mfb-plamt__opts{margin-top:10px}
+.mfb-radio{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer;font-size:16px;line-height:1.3}
+.mfb-ui .mfb-radio input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--mfb-accent)}
+.mfb-nudge{margin:-6px 0 12px}
+.mfb-sheet .mfb-recipe__sum{margin:0 0 2px;color:var(--mfb-muted);font-size:14px;line-height:1.4}
+.mfb-sheet .mfb-pick .mfb-row__note{display:block}
+.mfb-sheet .mfb-picks .mfb-row{align-items:center}
+
+/* picker */
+.mfb-pk__slots{margin:0 0 12px}
+.mfb-pk__wk{margin:0 0 12px;padding:0 10px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card)}
+.mfb-pk__wks{display:list-item;min-height:44px;padding:10px 0;color:var(--mfb-ink);font-weight:600;cursor:pointer}
+.mfb-pk__inweek{margin:0 0 6px;padding:0;list-style:none}
+.mfb-pk__search{margin:0 0 12px}
+.mfb-ui input.mfb-add__in.mfb-pk__q{width:100%}
+.mfb-pk__pools{margin:0 0 8px}
+.mfb-pk__tgls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.mfb-ui .mfb-btn.mfb-tgl{min-height:44px;padding:4px 14px;border:1px solid var(--mfb-tint-line);border-radius:999px;background:var(--mfb-bg);font-size:15px}
+.mfb-ui .mfb-btn.mfb-tgl[aria-pressed="true"]::before{content:"✓";margin-right:2px}
+.mfb-pk__count{min-height:1.5em;margin:4px 0;color:var(--mfb-muted);font-size:14px}
+.mfb-pk__list{margin:0;padding:0;list-style:none}
+.mfb-pk__li+.mfb-pk__li{border-top:1px solid var(--mfb-line-soft)}
+.mfb-ui .mfb-btn.mfb-pk__row{display:flex;justify-content:flex-start;gap:12px;width:100%;min-height:72px;padding:8px 4px;border-radius:var(--mfb-radius);color:var(--mfb-ink);font-weight:400;text-align:left}
+.mfb-ui .mfb-btn.mfb-pk__row--s{min-height:56px}
+.mfb-ui .mfb-btn.mfb-pk__row:not(:disabled):hover{background:var(--mfb-tint)}
+.mfb-ui .mfb-btn.mfb-pk__row[aria-busy="true"]{background:var(--mfb-tint);cursor:progress}
+.mfb-pk__rb{display:flex;flex:1 1 auto;flex-direction:column;min-width:0}
+.mfb-pk__t{display:-webkit-box;overflow:hidden;font-size:16px;font-weight:600;line-height:1.3;overflow-wrap:anywhere;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
+.mfb-pk__m{margin-top:2px;color:var(--mfb-muted);font-size:14px;line-height:1.35}
+.mfb-pk__err{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:0 0 8px;padding:8px 10px;border-left:4px solid var(--mfb-accent);background:var(--mfb-tint);color:var(--mfb-ink);font-size:15px}
+.mfb-pk__err>span{flex:1 1 100%}
+.mfb-pk__none{padding:12px 0;font-size:15px}
+.mfb-ui .mfb-btn.mfb-pk__more{width:100%;margin-top:8px}
+
+/* S5 */
+.mfb-apply__from{color:var(--mfb-ink);font-weight:600}
+.mfb-apply__desc{margin:4px 0 0;font-size:15px;line-height:1.45}
+.mfb-apply__prev{margin:4px 0 16px;padding:10px 12px;border-radius:var(--mfb-radius-card);background:var(--mfb-tint);font-size:14px;line-height:1.45;list-style:none}
+.mfb-apply__prev li+li{margin-top:4px}
+.mfb-apply__day{font-weight:700}
+.mfb-apply__fs{margin:12px 0}
+.mfb-apply__ph{margin:16px 0 0}
+.mfb-sheet.mfb-apply .mfb-serv{margin-top:14px}
+/* 6 people chips of 48 px: one row at 375 (343 px), 5 + 1 at 320 (S5) */
+.mfb-sheet .mfb-chips--ppl .mfb-chip__txt{min-width:48px;padding:0 8px}
+.mfb-sheet .mfb-serv{margin:4px 0 12px}
+
+/* ------------------------------------------------------------------ list page extras (S6) */
+.mfb-pending{margin:0 0 12px;padding:8px 12px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-tint);color:var(--mfb-ink);font-size:15px;line-height:1.45}
+.mfb-lp .mfb-progress__bar{margin-bottom:16px}
+
+/* ------------------------------------------------------------------ S1 simulated recipe page */
+.mfb-rm__back{margin:0 0 4px}
+.mfb-rm__back .mfb-btn{gap:6px;text-decoration:none}
+.mfb-rm__note{margin:0 0 4px;padding:10px 12px;border:1px dashed #9a7300;border-radius:var(--mfb-radius-card);background:#fffbea;color:#3d2e00;font-size:14px;line-height:1.45}
+.mfb-ui a.mfb-rm__live{color:#3d2e00;font-weight:600}
+.mfb-rm__img{display:block;width:100%;height:auto;max-height:440px;margin:0 0 12px;border-radius:var(--mfb-radius-card);background:var(--mfb-tint);object-fit:cover}
+.mfb-rm__meta{display:flex;flex-wrap:wrap;gap:8px}
+.mfb-rm__chip{padding:4px 12px;border-radius:999px;background:var(--mfb-tint);font-size:14px}
+.mfb-rm__chip strong{color:var(--mfb-accent-hover);font-weight:600}
+.mfb-ui .mfb-bar .mfb-bar__row>.mfb-bar__list{flex-basis:100%}
+@media (min-width:1024px){.mfb-ui .mfb-bar .mfb-bar__row>.mfb-bar__list{flex-basis:auto}}
+.mfb-rm__h{margin:8px 0 6px;padding-bottom:6px;border-bottom:2px solid var(--mfb-tint-line);color:var(--mfb-ink);font-size:22px;font-weight:700}
+.mfb-rm__h3{margin:16px 0 4px;color:var(--mfb-ink);font-size:18px;font-weight:700}
+.mfb-rm__g{margin:12px 0 2px;color:var(--mfb-accent);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.mfb-ui ul.mfb-rm__ul{margin:0;padding:0}
+.mfb-ui ul.mfb-rm__ul>li{position:relative;padding:8px 0 8px 18px;border-bottom:1px solid var(--mfb-line-soft);font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+.mfb-rm__ul>li::before{content:"";position:absolute;top:1.05em;left:4px;width:6px;height:6px;border-radius:50%;background:var(--mfb-accent)}
+.mfb-rm__more{margin:20px 0}
+.mfb-rm__other{margin:24px 0 0;padding-top:16px;border-top:1px solid var(--mfb-line)}
+.mfb-ui select.mfb-move.mfb-rm__sel{width:100%}
+
+/* ------------------------------------------------------------------ S8 print (A4 portrait week for the fridge) */
+.mfb-print-root.mfb-print-root--plan{columns:auto;font-size:9.5pt;line-height:1.3}
+.mfb-print-root--plan .mfb-print-root__title{margin:0 0 6pt}
+.mfb-print-root--plan .mfb-print-root__prep{margin:0 0 6pt}
+.mfb-print-root--plan .mfb-print-root__prep li{margin:0;font-size:9pt}
+.mfb-print-root--plan .mfb-print-root__prep li::before{content:"– "}
+.mfb-print-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.mfb-print-table th,.mfb-print-table td{padding:2.5pt 3.5pt;border:.5pt solid #999;text-align:left;vertical-align:top;font-size:9pt;line-height:1.25}
+.mfb-print-table thead th:first-child,.mfb-print-table tbody th{width:22mm}
+.mfb-print-table td>div+div{margin-top:3pt}
+.mfb-print-root--plan .mfb-print-root__recipes{margin-top:6pt}
+.mfb-print-root--plan .mfb-print-root__r{margin:0;font-size:8pt;line-height:1.3}
+@page{size:A4 portrait;margin:12mm}
+
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media (forced-colors:active){
+  .mfb-ui .mfb-btn.mfb-chip-add,.mfb-ui .mfb-btn.mfb-cell-add{border-color:CanvasText}
+  .mfb-seg__in:checked+.mfb-seg__txt{forced-color-adjust:none;border-color:Highlight;background:Highlight;color:HighlightText}
+  .mfb-plcell__dot,.mfb-pill{forced-color-adjust:none;border:1px solid CanvasText}
+}
+@media print{.site-head,.proto,.site-foot{display:none!important}}

@@ -1,0 +1,436 @@
+/* mfb-nakupni-seznam - shopping list and card polish styles (build spec section 10).
+ * Readable source; tools/build-plugin.mjs runs csso on it to produce mfb.min.css (budget: 6 KB gzip, section 14).
+ *
+ * Namespacing: every rule targets our own nodes (.mfb-ui and .mfb-* classes) or post content that our own
+ * marker classes / body classes switched on (#tisk.mfb-card, .mfb-steps, body.mfb-meta-chips, html.mfb-*).
+ * No @layer, no :where() base rules, no rules on .entry-content ul/li, wp-container-*, .noPrint, .mobile-only,
+ * .desktop-only or fa-*. Nothing is positioned with a z-index; the only overlay is the native <dialog>.
+ *
+ * Theme collisions handled here (section 10.1, fixtures/live/additional-css.css):
+ *   Vilva Pro  button{outline:none;background:#121212;text-transform:uppercase;padding:18px;...} and
+ *              button:hover{background:var(--primary-color)}: buttons reset at (0,3,0), hover at (0,4,0)+.
+ *   Mobile Additional CSS p{font-size:15px!important}: the UI uses no <p>; card markers on a <p> get a
+ *              matching !important override below 768 px.
+ *   #primary .post .entry-content hN (1,2,1): no injected headings; polish selectors are (1,3,0).
+ *   .entry-content a{text-decoration:underline}, a:hover/:visited (0,2,1): link rules here are (0,3,1)+.
+ *   Theme form controls (input[type=text]:focus is (0,2,1)): control resets and focus rings are (0,3,1).
+ *   Vilva / Vilva Pro label{width:calc(100% - 50px)} (top level, (0,0,1)): .mfb-ui label resets the width at (0,1,1),
+ *              so chips stay one row and every row label fills its li ("the whole row is the label", 10.6.1).
+ *
+ * Breakpoints: card polish 768/960 (spec 10.3), sheet 768 (10.4.1), toolbar and list page 1024 (10.2, 10.6.7).
+ * The list page grid keys on .mfb-lp.is-desk, which list-ui.mjs sets from matchMedia('(min-width: 1024px)')
+ * together with moving "Recepty v seznamu" and the end actions into the aside.
+ * Toggles use the hidden attribute (.mfb-ui [hidden] below). This file is ASCII only.
+ */
+
+/* ------------------------------------------------------------------ 10.1 tokens */
+:root{
+  --mfb-accent:#823d99;
+  --mfb-accent-hover:#6b327d;
+  --mfb-tint:#f3ecf5;
+  --mfb-tint-line:#dac5e0;
+  --mfb-text:#333333;
+  --mfb-ink:#121212;
+  --mfb-muted:#6f6f6f;
+  --mfb-line:rgba(51,51,51,.15);
+  --mfb-line-soft:rgba(51,51,51,.12);
+  --mfb-bg:#ffffff;
+  --mfb-font:Bitter, Georgia, serif;
+  --mfb-font-display:'Playfair Display', Georgia, serif;
+  --mfb-radius:5px;
+  --mfb-radius-card:8px;
+  --mfb-radius-sheet:12px;
+  --mfb-tap:48px;
+  --mfb-focus:3px solid #823d99;
+}
+
+/* ------------------------------------------------------------------ base and resets (our nodes only) */
+.mfb-ui{font-family:var(--mfb-font);color:var(--mfb-text);line-height:1.4;letter-spacing:normal;text-transform:none;text-align:start}
+.mfb-ui,.mfb-ui *,.mfb-ui ::before,.mfb-ui ::after{box-sizing:border-box}
+.mfb-ui[hidden],.mfb-ui [hidden]{display:none!important}
+.mfb-ui ul,.mfb-ui ol{list-style:none;margin:0;padding:0}
+.mfb-ui li{margin:0;padding:0}
+.mfb-ui fieldset{min-width:0;margin:0;padding:0;border:0}
+.mfb-ui legend{float:left;width:100%;margin:0;padding:0;border:0;color:inherit;font:inherit;white-space:normal}
+.mfb-ui legend+*{clear:left}
+.mfb-ui label{margin:0;width:auto}
+.mfb-ui svg.mfb-ico{display:block;flex:none;width:20px;height:20px;fill:none;stroke:currentColor}
+.mfb-ui .mfb-sr{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;border:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+/* radios of the chips and the view switch: hidden but focusable; the label's span is the visible control */
+.mfb-ui input.mfb-chip__in,.mfb-ui input.mfb-view__in{position:absolute;width:1px;height:1px;margin:0;padding:0;border:0;opacity:0;overflow:hidden;clip-path:inset(50%)}
+.mfb-ui input.mfb-cb{-webkit-appearance:checkbox;appearance:auto;flex:none;width:24px;height:24px;margin:0;padding:0;accent-color:var(--mfb-accent);box-shadow:none;cursor:pointer;vertical-align:middle}
+.mfb-ui .mfb-sep{color:var(--mfb-muted)}
+.mfb-bar .mfb-sep{color:var(--mfb-text)}
+.mfb-bar .mfb-act{white-space:nowrap}
+
+/* focus (10.1, 12.3): the spec rule, plus the same ring at a specificity theme control rules cannot reach */
+.mfb-btn:focus-visible,.mfb-ui :focus-visible{outline:var(--mfb-focus);outline-offset:2px}
+.mfb-ui .mfb-btn.mfb-btn:focus-visible,
+.mfb-ui input.mfb-cb.mfb-cb:focus-visible,
+.mfb-ui input.mfb-add__in.mfb-add__in:focus-visible,
+.mfb-ui select.mfb-move.mfb-move:focus-visible,
+.mfb-ui textarea.mfb-copybox.mfb-copybox:focus-visible,
+.mfb-ui summary.mfb-recipes__sum:focus-visible,
+.mfb-ui summary.mfb-bought__sum:focus-visible,
+.mfb-ui .mfb-chip .mfb-chip__in:focus-visible+.mfb-chip__txt,
+.mfb-ui .mfb-view .mfb-view__in:focus-visible+.mfb-view__txt,
+.mfb-ui a.mfb-rcp__title:focus-visible,
+.mfb-ui a.mfb-sec__link:focus-visible{outline:var(--mfb-focus);outline-offset:2px}
+
+/* ------------------------------------------------------------------ buttons (.mfb-btn on every control) */
+.mfb-ui .mfb-btn.mfb-btn{-webkit-appearance:none;appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:auto;max-width:100%;min-height:44px;margin:0;padding:8px 14px;border:1px solid transparent;border-radius:var(--mfb-radius);background:transparent;box-shadow:none;color:var(--mfb-accent-hover);font:inherit;font-family:var(--mfb-font);font-size:16px;font-weight:600;line-height:1.3;letter-spacing:normal;text-transform:none;text-decoration:none;text-align:center;text-shadow:none;white-space:normal;vertical-align:middle;cursor:pointer;transition:none}
+.mfb-ui a.mfb-btn{text-decoration:none}
+.mfb-ui .mfb-btn.mfb-btn:disabled{cursor:not-allowed}
+.mfb-ui .mfb-btn__ico{display:inline-flex;flex:none}
+/* a label may shrink below its longest word (2-column toolbar at 320 px, text-spacing overrides, 12.9): it wraps
+   inside its button instead of running into the next one */
+.mfb-ui .mfb-btn__label{min-width:0;overflow-wrap:anywhere}
+
+.mfb-ui .mfb-btn.mfb-btn--primary{min-height:48px;padding:10px 18px;border-color:var(--mfb-accent);background:var(--mfb-accent);color:#fff;font-size:17px}
+.mfb-ui .mfb-btn.mfb-btn--primary:not(:disabled):hover{border-color:var(--mfb-accent-hover);background:var(--mfb-accent-hover);color:#fff}
+/* disabled primary carries an instruction ("Vyberte, co chcete koupit"): keep it readable (#333 on tint 10.9:1) */
+.mfb-ui .mfb-btn.mfb-btn--primary:disabled{border-color:var(--mfb-tint-line);background:var(--mfb-tint);color:var(--mfb-text)}
+/* documented fallback if the filled primary looks too close to "Stahnout" (10.2): CSS only */
+.mfb-ui .mfb-btn.mfb-btn--primary.is-tonal{border:2px solid var(--mfb-accent);background:var(--mfb-bg);color:var(--mfb-accent-hover)}
+.mfb-ui .mfb-btn.mfb-btn--primary.is-tonal:not(:disabled):hover{background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+
+.mfb-ui .mfb-btn.mfb-btn--ghost{border-color:var(--mfb-tint-line);background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:15px}
+.mfb-ui .mfb-btn.mfb-btn--ghost:not(:disabled):hover{border-color:var(--mfb-accent);background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+
+.mfb-ui .mfb-btn.mfb-btn--outline{min-height:48px;padding:10px 18px;border:2px solid var(--mfb-accent);background:var(--mfb-bg);color:var(--mfb-accent-hover)}
+.mfb-ui .mfb-btn.mfb-btn--outline:not(:disabled):hover{background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+
+/* inline text actions ("Vratit", "Zobrazit seznam", "Upravit" ...): link-like, still 44 px tall */
+.mfb-ui .mfb-btn.mfb-btn--text{min-height:44px;padding:0 4px;border:0;background:transparent;color:var(--mfb-accent-hover);font-size:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.mfb-ui .mfb-btn.mfb-btn--text:not(:disabled):hover{background:transparent;color:var(--mfb-ink);text-decoration-thickness:2px}
+
+/* toggles (wake lock, Vetsi pismo): static label, aria-pressed; pressed = filled tint + accent border */
+.mfb-ui .mfb-btn.mfb-btn[aria-pressed="true"]{border-color:var(--mfb-accent);background:var(--mfb-tint);box-shadow:inset 0 0 0 1px var(--mfb-accent);color:var(--mfb-accent-hover)}
+
+/* ------------------------------------------------------------------ 10.2 recipe toolbar */
+.mfb-bar.mfb-ui{display:block;margin:12px 0 24px;padding:12px;border:1px solid transparent;border-radius:var(--mfb-radius-card);background:var(--mfb-tint);font-size:15px}
+.mfb-bar .mfb-bar__row{display:flex;flex-wrap:wrap;gap:8px}
+.mfb-bar .mfb-bar__row>.mfb-btn{flex:1 1 calc(50% - 4px);min-width:0}
+.mfb-bar .mfb-bar__row>.mfb-btn--primary{flex-basis:100%}
+.mfb-bar .mfb-bar__row>.mfb-btn.mfb-btn--ghost{padding-left:10px;padding-right:10px}
+.mfb-bar .mfb-bar__state,.mfb-bar .mfb-bar__msg{font-size:15px;line-height:1.5;color:var(--mfb-text)}
+.mfb-bar .mfb-bar__state{margin-top:8px}
+.mfb-bar .mfb-bar__msg:not(:empty),.mfb-bar .mfb-bar__copy:not(:empty){margin-top:8px}
+/* write errors (role=alert, 12.7) */
+.mfb-bar .mfb-bar__alert:not(:empty),.mfb-lp .mfb-alert:not(:empty){margin-top:8px;padding:8px 10px;border-left:4px solid var(--mfb-accent);background:var(--mfb-bg);color:var(--mfb-ink);font-size:15px;font-weight:600;line-height:1.45}
+.mfb-lp .mfb-alert:not(:empty){margin-top:12px;background:var(--mfb-tint)}
+
+/* in-flow button after the last ingredient element */
+.mfb-inflow.mfb-ui{display:block;margin:8px 0 20px}
+.mfb-inflow .mfb-btn.mfb-btn--outline{width:100%;max-width:420px}
+
+@media (min-width:1024px){
+  .mfb-bar.mfb-ui{max-width:760px}
+  .mfb-bar .mfb-bar__row{gap:12px}
+  .mfb-bar .mfb-bar__row>.mfb-btn{flex:0 0 auto}
+  .mfb-bar .mfb-bar__row>.mfb-btn--primary{min-width:280px}
+  .mfb-inflow .mfb-btn.mfb-btn--outline{width:auto;max-width:100%}
+}
+
+/* ------------------------------------------------------------------ 10.3 card polish (exact spec selectors) */
+#tisk.mfb-card .mfb-h.mfb-h{font-family:var(--mfb-font);font-weight:700;font-size:22px;line-height:1.25;color:var(--mfb-text);
+  text-transform:none;letter-spacing:normal;margin:1.25em 0 .6em;padding-bottom:6px;border-bottom:2px solid var(--mfb-tint-line)}
+#tisk.mfb-card .mfb-h strong{font-weight:inherit}
+#tisk.mfb-card .mfb-rt.mfb-rt{font-family:var(--mfb-font);font-weight:700;font-size:20px;line-height:1.3;color:var(--mfb-ink);margin:1.75em 0 .5em}
+#tisk.mfb-card .mfb-gl.mfb-gl{font-family:var(--mfb-font);font-weight:700;font-size:13px!important;line-height:1.4;
+  letter-spacing:1px;text-transform:uppercase;color:var(--mfb-accent);margin:1.25em 0 .35em}
+#tisk.mfb-card ul.mfb-ing{list-style:none;padding-left:0;margin:0 0 1em}
+#tisk.mfb-card ul.mfb-ing>li{position:relative;padding:8px 0 8px 22px;line-height:1.5;border-bottom:1px solid var(--mfb-line-soft);margin:0}
+#tisk.mfb-card ul.mfb-ing>li:last-child{border-bottom:0}
+#tisk.mfb-card ul.mfb-ing>li::before{content:"";position:absolute;left:6px;top:calc(8px + .75em - 3px);width:6px;height:6px;border-radius:50%;background:var(--mfb-accent)}
+#tisk.mfb-card ul.mfb-ing ul{list-style:disc}
+#tisk.mfb-card .mfb-q{font-weight:700;color:var(--mfb-ink)}
+:is(#tisk,.entry-content) ol.mfb-steps.mfb-steps>li{margin-bottom:14px;padding-left:4px;line-height:1.7}
+:is(#tisk,.entry-content) ol.mfb-steps.mfb-steps>li::marker{color:var(--mfb-accent);font-weight:700}
+:is(#tisk,.entry-content) ul.mfb-steps.mfb-steps>li::marker{color:var(--mfb-accent)}
+#tisk.mfb-card hr.mfb-hr{background:transparent!important;border:0!important;border-top:2px solid var(--mfb-tint-line)!important;height:0!important;opacity:1}
+@media (min-width:768px){#tisk.mfb-card .mfb-h.mfb-h{font-size:26px}#tisk.mfb-card .mfb-rt.mfb-rt{font-size:24px}}
+@media (min-width:960px){
+  #tisk.mfb-card ul.mfb-ing.mfb-cols{columns:2;column-gap:40px}
+  #tisk.mfb-card ul.mfb-ing.mfb-cols>li{break-inside:avoid}
+  :is(#tisk,.entry-content) .mfb-steps.mfb-steps{max-width:70ch}
+}
+/* the site's mobile p{font-size:15px!important} would shrink a marker or title that is a bold <p> ("Suroviny:"):
+   same breakpoint as that rule, so headings stay uniform with the H markers */
+@media (max-width:767px){
+  #tisk.mfb-card p.mfb-h.mfb-h{font-size:22px!important}
+  #tisk.mfb-card p.mfb-rt.mfb-rt{font-size:20px!important}
+}
+
+/* ------------------------------------------------------------------ 10.5 meta chips (flag metaChips)
+   Deliberate deviations from the 10.5 text:
+   - The three generic rules (figure, img, p) name the three meta icons instead of any img[data-image-title]. On the
+     live site Jetpack puts data-image-title on every attachment image, and in 170/172 posts a .wp-block-group (the
+     tips block) has a gallery <figure> as a direct child: the spec's generic selector would shrink those photos.
+   - In all 172 posts the time chip sits inside a wrapper group (first rule); servings and difficulty are top-level.
+     Only the outermost box of each chip carries the row margins: the inner time chip is a block flex box without
+     margins, so the wrapper is exactly as large as its pill (margins on both gave a double gap and, at 375 px, a
+     third row). The whitespace between the top-level boxes adds about 4.5 px to the 2 px right margin.
+   - flex-wrap:nowrap is set here, not left to the core layout CSS (wp-container-* rules), so a long text wraps
+     inside its pill and never pushes the icon onto a line of its own.
+   - The icons are display:block: inline, the 31.5 px line box of their figure dropped them 6 px below the text.
+   - No opacity on the difficulty chip (it put the label at 3.5:1, below AA, section 12); only its icon is lighter. */
+body.mfb-meta-chips .entry-content>.wp-block-group:has(>.wp-block-group__inner-container>.wp-block-group>figure img[data-image-title="time"]){display:inline-block;margin:0 2px 8px 0;vertical-align:middle}
+body.mfb-meta-chips .entry-content .wp-block-group:has(>figure img[data-image-title="time"]),
+body.mfb-meta-chips .entry-content>.wp-block-group:has(>figure img[data-image-title="servings"]),
+body.mfb-meta-chips .entry-content>.wp-block-group:has(>figure img[data-image-title="difficulty"]){
+  display:inline-flex;flex-wrap:nowrap;align-items:center;gap:6px;margin:0 2px 8px 0;padding:8px 12px 8px 8px;background:var(--mfb-tint);border-radius:999px;vertical-align:middle}
+body.mfb-meta-chips .entry-content>.wp-block-group>.wp-block-group__inner-container>.wp-block-group:has(>figure img[data-image-title="time"]){display:flex;margin:0}
+body.mfb-meta-chips .entry-content .wp-block-group:has(>figure img:is([data-image-title="time"],[data-image-title="servings"],[data-image-title="difficulty"])) figure{flex:none;margin:0}
+body.mfb-meta-chips .entry-content .wp-block-group:has(>figure img:is([data-image-title="time"],[data-image-title="servings"],[data-image-title="difficulty"])) img:is([data-image-title="time"],[data-image-title="servings"],[data-image-title="difficulty"]){display:block;width:20px!important;height:auto}
+body.mfb-meta-chips .entry-content .wp-block-group:has(>figure img:is([data-image-title="time"],[data-image-title="servings"],[data-image-title="difficulty"])) p{margin:0;font-size:15px!important;line-height:1.3}
+body.mfb-meta-chips .entry-content>.wp-block-group:has(>figure img[data-image-title="difficulty"]) img[data-image-title="difficulty"]{opacity:.75}
+body.mfb-meta-chips .entry-content>.wp-block-spacer:has(+.wp-block-ppb-print-page){height:12px!important}
+
+/* ------------------------------------------------------------------ 10.4 add/edit sheet (<dialog>) */
+html.mfb-sheet-open{overflow:hidden}
+.mfb-sheet.mfb-ui{width:100%;max-width:100%;max-height:88vh;margin:auto 0 0;padding:0;border:1px solid transparent;border-bottom:0;border-radius:var(--mfb-radius-sheet) var(--mfb-radius-sheet) 0 0;background:var(--mfb-bg);box-shadow:0 -4px 24px rgba(18,18,18,.2);color:var(--mfb-text);font-size:16px;overflow:auto;overscroll-behavior:contain}
+@supports (height:1dvh){.mfb-sheet.mfb-ui{max-height:88dvh}}
+.mfb-sheet.mfb-ui[open]{display:flex;flex-direction:column;animation:mfb-sheet-up .2s ease-out}
+.mfb-sheet.mfb-ui::backdrop{background:rgba(18,18,18,.5)}
+.mfb-sheet.mfb-ui[open]::backdrop{animation:mfb-fade .2s ease-out}
+@keyframes mfb-sheet-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes mfb-fade{from{opacity:0}to{opacity:1}}
+
+.mfb-sheet .mfb-sheet__head{display:grid;flex:none;grid-template-columns:minmax(0,1fr) 44px;align-items:start;column-gap:12px;padding:16px;border-bottom:1px solid var(--mfb-line)}
+.mfb-sheet .mfb-sheet__title{grid-column:1;grid-row:1;color:var(--mfb-ink);font-size:20px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.mfb-sheet .mfb-sheet__sub{grid-column:1;grid-row:2;margin-top:2px;color:var(--mfb-muted);font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.mfb-sheet .mfb-btn.mfb-sheet__close{grid-column:2;grid-row:1/span 2;width:44px;height:44px;margin:-6px -6px 0 0;padding:0;border-radius:50%;color:var(--mfb-ink)}
+.mfb-sheet .mfb-btn.mfb-sheet__close:not(:disabled):hover{background:var(--mfb-tint);color:var(--mfb-ink)}
+.mfb-sheet .mfb-sheet__close svg.mfb-ico{width:24px;height:24px}
+
+.mfb-sheet .mfb-sheet__body{flex:1 1 auto;min-height:96px;padding:8px 16px 16px;overflow-y:auto;overscroll-behavior:contain}
+.mfb-sheet .mfb-sheet__foot{flex:none;padding:12px 16px;border-top:1px solid var(--mfb-line);background:var(--mfb-bg)}
+@supports (padding:max(0px)){.mfb-sheet .mfb-sheet__foot{padding-bottom:max(12px,env(safe-area-inset-bottom))}}
+.mfb-sheet .mfb-sheet__note{margin:0 0 8px;color:var(--mfb-muted);font-size:14px;line-height:1.45}
+.mfb-sheet .mfb-sheet__err:not(:empty){margin:0 0 8px;padding:8px 10px;border-left:4px solid var(--mfb-accent);background:var(--mfb-tint);color:var(--mfb-ink);font-size:15px;font-weight:600;line-height:1.45}
+.mfb-sheet .mfb-sheet__msg:not(:empty){margin:0 0 8px;font-size:15px;line-height:1.45}
+.mfb-sheet .mfb-sheet__copy:not(:empty){margin:0 0 8px}
+.mfb-sheet .mfb-sheet__actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.mfb-sheet .mfb-sheet__actions>.mfb-btn--primary{flex:1 1 100%}
+
+/* legends: servings question, step 1 question; group legends override below */
+.mfb-sheet legend{margin:0 0 8px;color:var(--mfb-ink);font-size:16px;font-weight:600;line-height:1.3}
+.mfb-sheet .mfb-picks,.mfb-sheet .mfb-serv{margin:8px 0 12px}
+
+/* 10.4.2 porce stepper */
+.mfb-sheet .mfb-step{display:flex;align-items:center;gap:16px}
+.mfb-sheet .mfb-btn.mfb-step__btn{width:44px;height:44px;padding:0;border:2px solid var(--mfb-accent);border-radius:50%;background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:24px;font-weight:700;line-height:1}
+.mfb-sheet .mfb-btn.mfb-step__btn:not(:disabled):hover{background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+.mfb-sheet .mfb-btn.mfb-step__btn:disabled{border-color:var(--mfb-tint-line);color:var(--mfb-muted)}
+.mfb-sheet .mfb-step__out{display:inline-block;min-width:6.5em;color:var(--mfb-ink);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;text-align:center}
+.mfb-sheet .mfb-serv__cap{margin-top:8px;color:var(--mfb-muted);font-size:14px;line-height:1.45}
+
+/* 10.4.2 factor chips (radio group) */
+.mfb-sheet .mfb-chips{display:flex;flex-wrap:wrap;gap:8px}
+.mfb-sheet .mfb-chip{position:relative;display:inline-flex;cursor:pointer}
+.mfb-sheet .mfb-chip__txt{display:inline-flex;align-items:center;justify-content:center;min-width:60px;min-height:44px;padding:0 16px;border:2px solid var(--mfb-accent);border-radius:999px;background:var(--mfb-bg);color:var(--mfb-accent-hover);font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.2}
+.mfb-sheet .mfb-chip .mfb-chip__in:checked+.mfb-chip__txt{background:var(--mfb-accent);color:#fff}
+@media (hover:hover){.mfb-sheet .mfb-chip:hover .mfb-chip__in:not(:checked)+.mfb-chip__txt{background:var(--mfb-tint)}}
+
+/* 10.4.3 items */
+.mfb-sheet .mfb-btn.mfb-selall{margin:2px 0 0 -4px}
+.mfb-sheet .mfb-group{margin:0}
+.mfb-sheet .mfb-group>legend{margin:16px 0 2px;color:var(--mfb-accent);font-size:13px;font-weight:700;letter-spacing:1px;line-height:1.4;text-transform:uppercase}
+.mfb-sheet .mfb-row{display:flex;align-items:flex-start;gap:12px;min-height:48px;padding:10px 0;cursor:pointer}
+.mfb-sheet .mfb-row+.mfb-row{border-top:1px solid var(--mfb-line-soft)}
+.mfb-sheet .mfb-row__text{flex:1 1 auto;min-width:0;color:var(--mfb-ink);font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+.mfb-sheet .mfb-pick .mfb-row__name{font-weight:600}
+
+/* 10.4.4 multi-recipe step 2 */
+.mfb-sheet .mfb-btn.mfb-sheet__back{margin:0 0 4px -4px}
+.mfb-sheet .mfb-recipe+.mfb-recipe{margin-top:16px;padding-top:8px;border-top:1px solid var(--mfb-line)}
+.mfb-sheet .mfb-recipe__h{margin:12px 0 4px;color:var(--mfb-ink);font-size:18px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+
+@media (min-width:768px){
+  .mfb-sheet.mfb-ui{width:560px;max-width:calc(100vw - 32px);max-height:80vh;margin:auto;border-bottom:1px solid transparent;border-radius:var(--mfb-radius-card);box-shadow:0 8px 32px rgba(18,18,18,.25)}
+  .mfb-sheet.mfb-ui[open]{animation:mfb-fade .15s ease-out}
+  .mfb-sheet .mfb-sheet__actions>.mfb-btn--primary{flex:0 1 auto;min-width:240px}
+}
+
+/* ------------------------------------------------------------------ shared row parts, tags, copy box */
+.mfb-ui .mfb-row__qty{font-weight:700}
+.mfb-ui .mfb-row__name{font-weight:400}
+.mfb-ui .mfb-row__note{display:block;margin-top:2px;color:var(--mfb-muted);font-size:14px;font-weight:400;line-height:1.4}
+.mfb-ui .mfb-tag{display:inline-block;padding:0 8px;border:1px solid var(--mfb-line);border-radius:999px;color:var(--mfb-muted);font-size:12px;font-weight:400;line-height:18px;white-space:nowrap;vertical-align:1px}
+.mfb-ui textarea.mfb-copybox.mfb-copybox{display:block;width:100%;min-height:9em;margin:8px 0 0;padding:8px 10px;border:1px solid var(--mfb-muted);border-radius:var(--mfb-radius);background:var(--mfb-bg);box-shadow:none;color:var(--mfb-ink);font-family:var(--mfb-font);font-size:16px;line-height:1.45;resize:vertical}
+/* transient execCommand('copy') buffer (share.mjs): fixed, so focusing it never scrolls the page */
+textarea.mfb-copybuf{position:fixed;top:0;left:0;width:1px;height:1px;margin:0;padding:0;border:0;opacity:0;pointer-events:none;resize:none}
+
+/* ------------------------------------------------------------------ 10.6 list page */
+.mfb-list{margin:0 0 24px}
+.mfb-note{color:var(--mfb-muted);font-family:var(--mfb-font);font-size:14px;line-height:1.5}
+.mfb-list noscript .mfb-note{padding:12px 16px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-tint);color:var(--mfb-text);font-size:16px}
+
+.mfb-lp.mfb-ui{color:var(--mfb-text);font-size:16px}
+.mfb-lp .mfb-lp__notices{margin:0 0 16px}
+.mfb-lp .mfb-note--warn{margin:0 0 8px;padding:12px 16px;border:1px solid var(--mfb-tint-line);border-left:4px solid var(--mfb-accent);border-radius:var(--mfb-radius);background:var(--mfb-tint);color:var(--mfb-ink);font-size:15px}
+
+/* 1. progress */
+.mfb-lp .mfb-progress{color:var(--mfb-ink);font-size:18px;font-weight:600;line-height:1.3}
+.mfb-lp .mfb-progress__n{color:var(--mfb-accent);font-family:var(--mfb-font-display);font-size:30px;font-weight:700;font-variant-numeric:lining-nums tabular-nums;line-height:1}
+.mfb-lp .mfb-progress__bar{height:6px;margin:10px 0 6px;border-radius:3px;background:var(--mfb-tint);overflow:hidden}
+.mfb-lp .mfb-progress__fill{height:100%;border-radius:3px;background:var(--mfb-accent);transition:width .2s ease-out}
+.mfb-lp .mfb-lp__updated{color:var(--mfb-muted);font-size:14px}
+
+/* 2. tools, 3. actions */
+.mfb-lp .mfb-tools,.mfb-lp .mfb-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.mfb-lp .mfb-actions{margin-top:12px}
+.mfb-lp .mfb-tools>.mfb-btn,.mfb-lp .mfb-actions>.mfb-btn{flex:1 1 auto}
+.mfb-lp .mfb-tip{display:flex;flex:1 1 100%;align-items:center;gap:4px;min-height:44px;padding:4px 4px 4px 14px;border:1px solid transparent;border-radius:22px;background:var(--mfb-tint);color:var(--mfb-text);font-size:15px;line-height:1.4}
+.mfb-lp .mfb-tip--offline{padding-right:14px}
+.mfb-lp .mfb-tip__text{flex:1 1 auto;min-width:0}
+.mfb-lp .mfb-btn.mfb-tip__x{flex:none;width:44px;height:44px;padding:0;border-radius:50%;color:var(--mfb-ink)}
+.mfb-lp .mfb-btn.mfb-tip__x:not(:disabled):hover{background:var(--mfb-bg);color:var(--mfb-ink)}
+.mfb-lp .mfb-lp__copy:not(:empty){margin-top:8px}
+
+/* 4. view switch (segmented radio group) */
+.mfb-lp .mfb-views{position:relative;display:flex;margin:20px 0 12px;padding:0;border:1px solid transparent;border-radius:999px;background:var(--mfb-tint)}
+.mfb-lp .mfb-view{position:relative;display:flex;flex:1 1 0;min-width:0;padding:3px;cursor:pointer}
+.mfb-lp .mfb-view__txt{display:flex;flex:1 1 auto;align-items:center;justify-content:center;min-height:38px;padding:4px 12px;border:1px solid transparent;border-radius:999px;color:var(--mfb-accent-hover);font-size:16px;font-weight:500;line-height:1.25;text-align:center}
+/* the selected pill needs a >= 3:1 state indicator (12.5, 1.4.11): white pill + 2 px accent ring (about 6:1 on the
+   tint track; the inset shadow doubles the 1 px border without shifting the layout) + bolder text */
+.mfb-lp .mfb-view .mfb-view__in:checked+.mfb-view__txt{border-color:var(--mfb-accent);background:var(--mfb-bg);box-shadow:inset 0 0 0 1px var(--mfb-accent),0 1px 3px rgba(18,18,18,.12);color:var(--mfb-ink);font-weight:700}
+
+/* 5. add field */
+.mfb-lp .mfb-add{display:flex;gap:8px;margin:0 0 20px}
+.mfb-ui input.mfb-add__in.mfb-add__in{flex:1 1 auto;width:auto;min-width:0;height:52px;margin:0;padding:0 14px;border:1px solid var(--mfb-muted);border-radius:var(--mfb-radius);background:var(--mfb-bg);box-shadow:none;color:var(--mfb-ink);font-family:var(--mfb-font);font-size:18px;line-height:normal}
+.mfb-ui input.mfb-add__in.mfb-add__in::placeholder{color:var(--mfb-muted);opacity:1}
+.mfb-lp .mfb-btn.mfb-add__btn{flex:none;min-height:52px}
+
+/* 6. "Recepty v seznamu", 8. "Koupeno" (details) */
+.mfb-lp .mfb-recipes{margin:0 0 20px;padding:0 16px;border:1px solid var(--mfb-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-lp .mfb-recipes__sum,.mfb-lp .mfb-bought__sum{display:list-item;min-height:44px;padding:10px 0;color:var(--mfb-ink);font-size:16px;font-weight:600;line-height:1.5;cursor:pointer}
+.mfb-lp .mfb-recipes__list>li::before,.mfb-lp .mfb-rows>li::before{content:none}
+.mfb-lp .mfb-recipes__list>li.mfb-rcp{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:0;padding:8px 0;border-top:1px solid var(--mfb-line-soft);list-style:none}
+.mfb-lp .mfb-rcp .mfb-rcp__title{flex:1 1 100%;color:var(--mfb-ink);font-weight:600;overflow-wrap:anywhere}
+.mfb-lp .mfb-rcp a.mfb-rcp__title,.mfb-lp .mfb-sec__h a.mfb-sec__link{color:var(--mfb-ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+/* recipe title links are controls too: 44 px tall targets (12.4) */
+.mfb-lp .mfb-rcp a.mfb-rcp__title{display:flex;align-items:center;min-height:44px}
+.mfb-lp .mfb-sec__h a.mfb-sec__link{display:inline-flex;align-items:center;min-height:44px}
+.mfb-lp .mfb-rcp a.mfb-rcp__title:hover,.mfb-lp .mfb-sec__h a.mfb-sec__link:hover{color:var(--mfb-accent-hover);text-decoration-thickness:2px}
+.mfb-lp .mfb-rcp .mfb-rcp__serv{margin-right:auto;color:var(--mfb-muted);font-size:14px}
+/* the narrow desktop aside: servings on their own line, so "Upravit" and "Odebrat" never split across lines */
+.mfb-lp.is-desk .mfb-lp__aside .mfb-rcp .mfb-rcp__serv{flex:1 1 100%}
+.mfb-lp .mfb-lp__bought:not(:empty){margin:16px 0 0}
+.mfb-lp .mfb-bought>.mfb-rows{margin-top:4px}
+
+/* 7. sections and rows */
+.mfb-lp .mfb-sec{margin:0 0 20px}
+.mfb-lp .mfb-sec__h{margin:0 0 8px;color:var(--mfb-accent);font-size:13px;font-weight:700;letter-spacing:1px;line-height:1.4;text-transform:uppercase;overflow-wrap:anywhere}
+.mfb-lp .mfb-sec__n{color:var(--mfb-muted);font-weight:600}
+.mfb-lp .mfb-sec--recipe>.mfb-sec__h{color:var(--mfb-ink);font-size:18px;letter-spacing:normal;line-height:1.3;text-transform:none}
+.mfb-lp .mfb-sec__meta{display:flex;flex-wrap:wrap;align-items:center;gap:0 12px;margin:-4px 0 6px}
+.mfb-lp .mfb-sec__serv{margin-right:auto;color:var(--mfb-muted);font-size:14px}
+.mfb-lp .mfb-grp__h{margin:12px 0 6px;color:var(--mfb-muted);font-size:13px;font-weight:700;letter-spacing:1px;line-height:1.4;text-transform:uppercase}
+
+.mfb-lp ul.mfb-rows{margin:0 0 8px;padding:0;border:1px solid var(--mfb-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg);list-style:none}
+.mfb-lp .mfb-rows>li.mfb-li{margin:0;padding:0;list-style:none}
+.mfb-lp .mfb-li+.mfb-li{border-top:1px solid var(--mfb-line-soft)}
+/* the whole row is the label; 16 px side padding inside the list container */
+.mfb-lp .mfb-row{display:flex;align-items:center;gap:14px;min-height:56px;padding:12px 16px;cursor:pointer}
+.mfb-lp .mfb-row__text{flex:1 1 auto;min-width:0;color:var(--mfb-ink);font-size:18px;line-height:1.4;overflow-wrap:anywhere}
+.mfb-lp input.mfb-cb{width:28px;height:28px}
+.mfb-lp.is-readonly .mfb-row{cursor:default}
+
+/* checking off (10.6.6): struck through in place, then a 200 ms collapse, then "Koupeno" */
+.mfb-lp .is-checking .mfb-row__text,.mfb-lp .is-bought .mfb-row__text{color:var(--mfb-muted);text-decoration:line-through;text-decoration-thickness:2px}
+.mfb-lp .mfb-li.is-leaving{overflow:hidden;animation:mfb-collapse .2s ease-in forwards}
+.mfb-lp .mfb-li.is-new{animation:mfb-flash 1.6s ease-out}
+@keyframes mfb-collapse{from{max-height:7em;opacity:1}to{max-height:0;opacity:0;border-top-color:transparent}}
+@keyframes mfb-flash{from{background-color:var(--mfb-tint)}to{background-color:transparent}}
+
+/* 10.6.4 edit mode */
+.mfb-lp .mfb-row.mfb-row--edit{flex-wrap:wrap;gap:8px 12px;padding:6px 8px 6px 16px;cursor:default}
+.mfb-lp .mfb-row--edit .mfb-row__text{flex:1 1 12em}
+.mfb-ui select.mfb-move.mfb-move{-webkit-appearance:menulist;appearance:auto;flex:0 1 auto;width:auto;max-width:100%;min-height:44px;margin:0;padding:0 8px;border:1px solid var(--mfb-muted);border-radius:var(--mfb-radius);background:var(--mfb-bg);box-shadow:none;color:var(--mfb-text);font-family:var(--mfb-font);font-size:16px;line-height:normal}
+/* visible "Presunout do oddeleni" label above the select (12.2, WCAG 3.3.2) */
+.mfb-lp .mfb-move__l{display:flex;flex:0 1 auto;flex-direction:column;gap:2px;min-width:0;max-width:100%;cursor:default}
+.mfb-lp .mfb-move__t{color:var(--mfb-muted);font-size:13px;line-height:1.3}
+.mfb-lp .mfb-btn.mfb-row__rm{flex:none;width:44px;height:44px;padding:0;border-color:var(--mfb-tint-line);border-radius:50%;background:var(--mfb-bg);color:var(--mfb-accent-hover)}
+.mfb-lp .mfb-btn.mfb-row__rm:not(:disabled):hover{border-color:var(--mfb-accent);background:var(--mfb-tint);color:var(--mfb-accent-hover)}
+
+/* "Vetsi pismo" */
+.mfb-lp.is-big .mfb-row{min-height:64px}
+.mfb-lp.is-big .mfb-row__text{font-size:22px}
+.mfb-lp.is-big .mfb-row__note{font-size:16px}
+.mfb-lp.is-big input.mfb-cb{width:32px;height:32px}
+
+/* 10.6.5 empty state */
+.mfb-lp .mfb-empty{padding:24px 16px;border:1px dashed var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-bg)}
+.mfb-lp .mfb-empty__t{color:var(--mfb-ink);font-size:20px;font-weight:600;line-height:1.3}
+.mfb-lp .mfb-empty__d{margin-top:6px;font-size:16px;line-height:1.5}
+.mfb-lp .mfb-empty__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+
+/* 9. end actions + inline "Vymazat seznam" confirmation, 10. status line, 11. footer notes */
+.mfb-lp .mfb-lp__end{display:flex;flex-wrap:wrap;gap:8px}
+.mfb-lp .mfb-lp__end:not(:empty){margin:24px 0 0}
+.mfb-lp .mfb-confirm{display:flex;flex:1 1 100%;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;border:1px solid var(--mfb-tint-line);border-radius:var(--mfb-radius-card);background:var(--mfb-tint)}
+.mfb-lp .mfb-confirm__q{flex:1 1 100%;color:var(--mfb-ink);font-size:16px;font-weight:600}
+.mfb-lp .mfb-msg{color:var(--mfb-text);font-size:15px;line-height:1.5}
+.mfb-lp .mfb-msg:not(:empty){margin-top:12px}
+.mfb-lp .mfb-lp__foot{margin-top:24px}
+.mfb-lp .mfb-lp__foot>.mfb-note+.mfb-note{margin-top:6px}
+
+/* 10.6.7 >= 1024 px: main | 260 px sticky aside (progress, tools, actions, recipes, end actions) */
+.mfb-lp.is-desk .mfb-lp__grid{display:grid;grid-template-columns:minmax(0,1fr) 260px;align-items:start;gap:32px}
+.mfb-lp.is-desk .mfb-lp__main{grid-column:1;grid-row:1;min-width:0}
+/* the cap keeps a tall aside reachable (it scrolls itself) instead of pinning its end off-screen; the 6 px padding
+   (= 3 px ring + 2 px offset + 1) keeps the focus ring of its full-width buttons inside the scroll clip */
+.mfb-lp.is-desk .mfb-lp__aside{position:sticky;top:24px;grid-column:2;grid-row:1;max-height:calc(100vh - 48px);margin:-6px;padding:6px;overflow-y:auto;overscroll-behavior:contain}
+.mfb-lp.is-desk .mfb-tools,.mfb-lp.is-desk .mfb-actions,.mfb-lp.is-desk .mfb-lp__end{flex-direction:column;align-items:stretch}
+.mfb-lp.is-desk .mfb-tools>*,.mfb-lp.is-desk .mfb-actions>*,.mfb-lp.is-desk .mfb-lp__end>*{flex:none}
+.mfb-lp.is-desk .mfb-tools>.mfb-btn,.mfb-lp.is-desk .mfb-actions>.mfb-btn,.mfb-lp.is-desk .mfb-lp__end>.mfb-btn{width:100%;justify-content:flex-start;text-align:start}
+.mfb-lp.is-desk .mfb-lp__aside .mfb-recipes{margin:16px 0 0}
+.mfb-lp.is-desk .mfb-views{margin-top:0}
+
+/* ------------------------------------------------------------------ 10.7.3 list print root (direct child of body) */
+.mfb-print-root{display:none;font:11pt/1.4 var(--mfb-font);columns:2;column-gap:24px}
+.mfb-print-root .mfb-print-root__title{column-span:all;margin:0 0 10pt;font-size:14pt;font-weight:700}
+.mfb-print-root .mfb-print-root__sec{margin:0 0 8pt}
+.mfb-print-root .mfb-print-root__h{margin:8pt 0 3pt;font-size:9pt;font-weight:700;letter-spacing:.5pt;text-transform:uppercase;break-after:avoid}
+.mfb-print-root .mfb-print-root__h.is-recipe{font-size:10pt;letter-spacing:normal;text-transform:none}
+.mfb-print-root ul{margin:0;padding:0}
+.mfb-print-root li{break-inside:avoid;list-style:none;margin:0 0 2pt;padding:0}
+.mfb-print-root li::before{content:"\2610\0020"}
+.mfb-print-root .mfb-print-root__recipes{column-span:all;margin-top:10pt}
+.mfb-print-root .mfb-print-root__r{margin:0 0 2pt;font-size:9pt;overflow-wrap:anywhere}
+@media print{html.mfb-printing body>*:not(.mfb-print-root){display:none!important} .mfb-print-root{display:block}}
+
+/* ------------------------------------------------------------------ 12.10 forced colors: states as borders */
+@media (forced-colors:active){
+  .mfb-ui .mfb-btn.mfb-btn[aria-pressed="true"],
+  .mfb-sheet .mfb-chip .mfb-chip__in:checked+.mfb-chip__txt,
+  .mfb-lp .mfb-view .mfb-view__in:checked+.mfb-view__txt{forced-color-adjust:none;border-color:Highlight;background:Highlight;color:HighlightText}
+  /* forced-color-adjust:none above also stops the ring colour being forced: keep it a system colour */
+  .mfb-ui .mfb-btn.mfb-btn[aria-pressed="true"]:focus-visible,
+  .mfb-ui .mfb-chip .mfb-chip__in:focus-visible+.mfb-chip__txt,
+  .mfb-ui .mfb-view .mfb-view__in:focus-visible+.mfb-view__txt{outline-color:CanvasText}
+  .mfb-ui .mfb-btn.mfb-btn:disabled{border-color:GrayText;color:GrayText}
+  .mfb-lp .mfb-progress__bar{border:1px solid CanvasText}
+  .mfb-lp .mfb-progress__fill{forced-color-adjust:none;background:Highlight}
+  #tisk.mfb-card ul.mfb-ing>li::before{forced-color-adjust:none;background:CanvasText}
+}
+
+/* ------------------------------------------------------------------ 12.10 reduced motion: no slides, collapses or flashes */
+@media (prefers-reduced-motion:reduce){
+  .mfb-sheet.mfb-ui[open],.mfb-sheet.mfb-ui[open]::backdrop,.mfb-lp .mfb-li.is-leaving,.mfb-lp .mfb-li.is-new{animation:none!important}
+  .mfb-lp .mfb-progress__fill{transition:none}
+}
+
+/* ------------------------------------------------------------------ 10.8 recipe-page print (last: overrides the above) */
+/* no ancestor selectors: in modal mode the print plugin moves #tisk directly under <body> */
+@media print{
+  .mfb-ui,.mfb-bar,.mfb-inflow,.mfb-sheet{display:none!important}
+  html.mfb-sheet-open{overflow:visible}
+  #tisk.mfb-card ul.mfb-ing{columns:auto!important;list-style:disc;padding-left:1.4em}
+  #tisk.mfb-card ul.mfb-ing>li{padding-left:0;border:0}
+  #tisk.mfb-card ul.mfb-ing>li::before{content:none}
+  .mfb-steps{max-width:none}
+  :is(#tisk,.entry-content) .mfb-steps.mfb-steps{max-width:none}
+}
