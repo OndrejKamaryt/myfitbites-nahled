@@ -260,6 +260,10 @@
   const QS = new URLSearchParams(location.search);
   const FORCED = /^\d{4}-\d{2}-\d{2}$/.test(QS.get('dnes') || '') ? QS.get('dnes') : null;
   const SIM_FAIL = QS.get('simulace') === 'chyba';
+  // Owner decision 18. 10. 2026: cooking for 1 person by default. ?lide=N overrides it (the e2e tests use 2).
+  const DEF_PEOPLE = (() => { const n = Number(QS.get('lide')); return Number.isInteger(n) && n >= 1 && n <= 12 ? n : 1; })();
+  // ?pro=ctenarky: the link Týnka sends to readers for testing (reader-facing banner, no link to the owner proposal)
+  const READER = QS.get('pro') === 'ctenarky';
   const pad = (n) => String(n).padStart(2, '0');
   const keyOf = (dt) => `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
   const parseKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d, 12); };
@@ -300,7 +304,7 @@
   const NOTICES = new Set();
   let PLAN_RO = false;
 
-  const emptyPlan = () => ({ v: 1, rev: 0, updated: 0, people: 2, weeks: {} });
+  const emptyPlan = () => ({ v: 1, rev: 0, updated: 0, people: DEF_PEOPLE, weeks: {} });
   const intIn = (x, lo, hi) => (Number.isInteger(x) && x >= lo && x <= hi ? x : null);
   const FX = [0.5, 1, 2, 3];
   function validatePlan(x) {
@@ -308,7 +312,7 @@
     if (!isObj(x)) return out;
     out.rev = intIn(x.rev, 0, 1e9) || 0;
     out.updated = typeof x.updated === 'number' ? x.updated : 0;
-    out.people = intIn(x.people, 1, 12) || 2;
+    out.people = intIn(x.people, 1, 12) || DEF_PEOPLE;
     if (!isObj(x.weeks)) return out;
     for (const W of Object.keys(x.weeks)) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(W) || keyOf(parseKey(W)) !== W || parseKey(W).getDay() !== 1) continue;
@@ -1693,7 +1697,9 @@
     const w = wk0();
     const tpl = opts.sample ? { k: opts.sample.k, t: opts.sample.t, d: opts.sample.d, p: opts.sample.p, w: opts.sample.w.filter((m) => RECIPES.has(`p${m[2]}:r${m[3]}`)), x: opts.sample.x || [] } : opts.link;
     const nRec = new Set(tpl.w.map((m) => m[2] + ':' + m[3])).size;
-    const st = { P: Math.min(6, tpl.p || 2), W: defaultWeek(), mode: 'replace', alsoList: true, busy: false, status: '' };
+    // a sample week starts at the reader's own household size (default 1, owner decision 18. 10.); a shared link keeps
+    // the sender's, since it is usually opened by the same household
+    const st = { P: Math.min(6, (opts.sample ? readPlan().people : tpl.p) || DEF_PEOPLE), W: defaultWeek(), mode: 'replace', alsoList: true, busy: false, status: '' };
     const title = opts.sample ? tpl.t : str('plImportTitle');
     const Dl = openDialog({ title, cls: 'mfb-apply', trigger: opts.trigger });
     const draw = () => keepFocus(Dl.dlg, () => {
@@ -2058,6 +2064,12 @@
     const b = document.getElementById('proto-tools');
     if (!b) return;
     b.textContent = '';
+    if (READER) {
+      const head = b.parentNode && b.parentNode.querySelector('.proto__t');
+      const text = head && head.nextElementSibling;
+      if (head) head.textContent = 'Ukázka nového jídelníčku na myfitbites.blog';
+      if (text && text !== b) text.textContent = 'Zkoušíme, jestli vám pomůže naplánovat týden. Recepty jsou skutečné, nic se nikam neposílá a všechno zůstává jen ve vašem telefonu. Až to vyzkoušíte, napište Týnce na Instagram, co bylo jasné a co ne.';
+    }
     const t = today();
     const days = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota'];
     add(b, [
