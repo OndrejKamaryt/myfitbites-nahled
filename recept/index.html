@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Úvod a konec receptu – návrh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&amp;family=Playfair+Display:wght@700&amp;display=swap">
+<style>
+:root { --bg:#fbf8fc; --surface:#fff; --ink:#241b28; --text:#3d3342; --muted:#6e6274; --line:#e6dbeb; --accent:#823d99; --tint:#f3ebf6;
+  --display:"Playfair Display", Georgia, serif; --body:Bitter, Georgia, serif; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161118; --surface:#201922; --ink:#f4eef6; --text:#ddd3e1; --muted:#ab9db1; --line:#3a2e3f; --accent:#c48ad8; --tint:#2a1f2e; color-scheme:dark; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:400 17px/1.7 var(--body);
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); padding-block:32px 64px; }
+main { max-width:720px; margin:0 auto; }
+nav { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:24px; font-size:15px; }
+a { color:var(--accent); text-underline-offset:3px; }
+a:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+h1, h2 { font-family:var(--display); color:var(--ink); line-height:1.15; text-wrap:balance; }
+h1 { font-size:clamp(30px, 6vw, 44px); margin:0 0 8px; }
+h2 { font-size:clamp(22px, 4vw, 28px); margin:36px 0 8px; padding-top:20px; border-top:1px solid var(--line); }
+p, li { max-width:68ch; }
+ul, ol { padding-left:1.2em; display:grid; gap:6px; }
+li::marker { color:var(--accent); }
+code { font:500 15px/1.4 ui-monospace, Consolas, monospace; background:var(--tint); color:var(--ink); padding:2px 6px; border-radius:6px; }
+strong { color:var(--ink); }
+main { max-width:960px; }
+.shots { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin:20px 0 16px; align-items:start; }
+figure { margin:0; }
+figure.wide { margin:0 0 8px; }
+figure img { display:block; width:100%; height:auto; border:1px solid var(--line); border-radius:12px; background:#fff; }
+figcaption { margin-top:6px; font-size:15px; font-weight:600; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<nav aria-label="Odkazy"><a href="../">Náhled nákupního seznamu</a></nav>
+<h1>Úvod a konec receptu</h1>
+<p>Návrh podle pinchofyum.com: v úvodu odkaz „Přejít na recept“, na konci místo podpisu krátká výzva k Instagramu. Zatím je to jen v testovací kopii webu, na živém webu se nic nezměnilo.</p>
+
+<h2>1. Úvod: „Přejít na recept“</h2>
+<p>Na začátku každého receptu je odkaz, který jedním klepnutím sjede rovnou k tlačítku Vytisknout, nákupnímu seznamu a ingrediencím. Pinch of Yum ho má jako první věc v článku. Nejvíc pomůže u receptů s delším úvodem.</p>
+<div class="shots">
+  <figure><img src="img/b-zacatek-1.0.1-mobil.png" alt="Začátek receptu dnes, bez odkazu" width="750" height="1440" loading="lazy"><figcaption>Dnes</figcaption></figure>
+  <figure><img src="img/d-zacatek-navrh-mobil.png" alt="Začátek receptu s odkazem Přejít na recept" width="750" height="1440" loading="lazy"><figcaption>Návrh</figcaption></figure>
+  <figure><img src="img/f-po-kliknuti-navrh-mobil.png" alt="Po klepnutí: tlačítko Vytisknout, nákupní seznam a ingredience" width="750" height="1624" loading="lazy"><figcaption>Po klepnutí na odkaz</figcaption></figure>
+</div>
+<figure class="wide"><img src="img/d-zacatek-navrh-pocitac.png" alt="Začátek receptu s odkazem na počítači" width="1280" height="560" loading="lazy"><figcaption>Návrh na počítači</figcaption></figure>
+
+<h2>2. Konec: místo podpisu výzva k Instagramu</h2>
+<p>Podpis se srdíčkem schovám, jak píšeš. Na jeho místo navrhuji box „Uvařili jste tenhle recept? Pochlubte se na Instagramu a označte @myfit_bites.“ Takhle končí recepty i na Pinch of Yum a čtenáři tak mají důvod sdílet fotky a označit tě.</p>
+<div class="shots">
+  <figure><img src="img/a-konec-karty-dnes-mobil.png" alt="Konec receptu dnes, s podpisem se srdíčkem" width="750" height="1440" loading="lazy"><figcaption>Dnes (s podpisem)</figcaption></figure>
+  <figure><img src="img/c-konec-karty-1.0.1-mobil.png" alt="Konec receptu bez podpisu" width="750" height="1440" loading="lazy"><figcaption>Bez podpisu</figcaption></figure>
+  <figure><img src="img/e-konec-karty-navrh-mobil.png" alt="Konec receptu s výzvou k Instagramu" width="750" height="1440" loading="lazy"><figcaption>Návrh</figcaption></figure>
+</div>
+<figure class="wide"><img src="img/e-konec-karty-navrh-pocitac.png" alt="Výzva k Instagramu na počítači" width="1280" height="520" loading="lazy"><figcaption>Návrh na počítači</figcaption></figure>
+
+<h2>Co zůstává stejné</h2>
+<ul>
+  <li>Do tisku ani do PDF se odkaz ani box nedostanou.</li>
+  <li>Samotné recepty neupravuji. Všechno dělá plugin a každou z těch dvou věcí jde vypnout jedním zaškrtnutím.</li>
+  <li>Platí to pro všechny recepty najednou, včetně nových.</li>
+</ul>
+
+</main>
+</body>
+</html>
